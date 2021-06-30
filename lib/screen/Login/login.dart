@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen>
                                 loginRequestModel.username = u;
                                 loginRequestModel.password = p;
                               });
-                            }), // toi can lay data cho nay
+                            }),
                         new ForgotPassword(),
                       ],
                     ),
@@ -131,17 +131,12 @@ class _LoginScreenState extends State<LoginScreen>
                             child: InkWell(
                               onTap: () {
                                 setState(() {
-                                  isApiCallProcess = true;
                                   // if validating success
-
                                   APIService apiService = new APIService();
                                   apiService
                                       .login(loginRequestModel)
                                       .then((value) {
                                     if (value != null) {
-                                      setState(() {
-                                        isApiCallProcess = false;
-                                      });
                                       if (value.role == 'student') {
                                         // ok
                                         animationStatus = 1;

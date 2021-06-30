@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
+import 'package:lcss_mobile_app/api/api_service.dart';
+import 'package:lcss_mobile_app/model/user_model.dart';
+import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -14,22 +18,50 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
+  bool _isLoading = true;
+  String username;
+  Future<UserResponseModel> userData;
   static List<Widget> _widgetOptions = <Widget>[
     Text(
       'Schedule',
       style: optionStyle,
     ),
     Home(),
-    Profile(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    callLoad();
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  callLoad() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    username = prefs.getString("username");
+    APIService apiService = new APIService();
+    userData = apiService.getUserData(username);
+    print(username);
+    print(userData);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Center(
+              child: _selectedIndex == 2
+                  ? Profile(
+                      userData: userData,
+                    )
+                  : _widgetOptions.elementAt(_selectedIndex),
+            ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -81,9 +113,27 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class Profile extends StatelessWidget {
-  Profile({
-    Key key,
-  }) : super(key: key);
+  Profile({Key key, this.userData}) : super(key: key);
+
+  Future<UserResponseModel> userData;
+
+  Widget buildImage() {
+    final image = NetworkImage(
+        'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');
+
+    return ClipOval(
+      child: Material(
+        color: Colors.transparent,
+        child: Ink.image(
+          image: image,
+          fit: BoxFit.cover,
+          height: 100,
+          width: 100,
+          child: InkWell(),
+        ),
+      ),
+    );
+  }
 
   final Widget editVector =
       SvgPicture.asset('assets/vectors/edit.svg', semanticsLabel: 'vector');
@@ -100,44 +150,126 @@ class Profile extends StatelessWidget {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.pushNamed(context, '/editProfile');
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                    builder: (context) => new EditProfileScreen(
+                      userData: userData,
+                    ),
+                  ),
+                );
               },
-            )
+            ),
           ],
           backgroundColor: Colors.black,
           automaticallyImplyLeading: false,
-          expandedHeight: 300,
+          expandedHeight: 200,
           stretch: true,
-          flexibleSpace: FlexibleSpaceBar(
-            centerTitle: true,
-            stretchModes: <StretchMode>[
-              StretchMode.zoomBackground,
-              StretchMode.blurBackground,
-              StretchMode.fadeTitle,
-            ],
-            title: Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 0, 40),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Text('Landy Carol'),
+          pinned: true,
+          flexibleSpace: Stack(
+            children: <Widget>[
+              FlexibleSpaceBar(
+                collapseMode: CollapseMode.pin,
+                centerTitle: true,
+                stretchModes: <StretchMode>[
+                  StretchMode.zoomBackground,
+                  StretchMode.blurBackground,
+                  StretchMode.fadeTitle,
+                ],
+                title: Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: FutureBuilder<UserResponseModel>(
+                    future: userData,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(snapshot.data.phone);
+                      } else if (snapshot.hasError) {
+                        return Text("${snapshot.error}");
+                      }
+                      return CircularProgressIndicator();
+                    },
+                  ),
+                ),
+                background: new Image.network(
+                  'https://images.unsplash.com/photo-1558898479-33c0057a5d12?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
+                  // image link se update sau
+                  fit: BoxFit.fill,
+                  colorBlendMode: BlendMode.darken,
+                  color: Colors.black45,
+                ),
               ),
-            ),
-            background: new Image.asset(
-              'assets/images/bg_profile.png',
-              fit: BoxFit.fill,
-              colorBlendMode: BlendMode.darken,
-            ),
+              // Center(
+              //   child: Row(
+              //     children: <Widget>[
+              //       Spacer(),
+              //       buildImage(),
+              //       Spacer(),
+              //     ],
+              //   ),
+              // ),
+            ],
           ),
         ),
         SliverList(
             delegate: SliverChildListDelegate([
           Container(
-            height: 110,
+            height: 120,
             color: Colors.white,
             child: Column(
               children: <Widget>[
                 Column(
                   children: <Widget>[
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.only(top: 23, left: 21),
+                      child: Text(
+                        'Số điện thoại',
+                        style: TextStyle(
+                          color: Color(0xff413e55),
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 20, left: 21),
+                      alignment: Alignment.centerLeft,
+                      child: FutureBuilder<UserResponseModel>(
+                        future: userData,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(snapshot.data.phone);
+                          } else if (snapshot.hasError) {
+                            return Text("${snapshot.error}");
+                          }
+                          return CircularProgressIndicator();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 120,
+            color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    Opacity(
+                      opacity: 0.10,
+                      child: Container(
+                        height: 5,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Color(0xff4dc591),
+                            width: 1,
+                          ),
+                          color: Color(0xff4dc591),
+                        ),
+                      ),
+                    ),
                     Container(
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.only(top: 23, left: 21),
@@ -152,12 +284,16 @@ class Profile extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(top: 20, left: 21),
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        "0215786498", // Truyen data tu login vao
-                        style: TextStyle(
-                          color: Color(0xff546e7a),
-                          fontSize: 20,
-                        ),
+                      child: FutureBuilder<UserResponseModel>(
+                        future: userData,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(snapshot.data.parentPhone);
+                          } else if (snapshot.hasError) {
+                            return Text("${snapshot.error}");
+                          }
+                          return CircularProgressIndicator();
+                        },
                       ),
                     ),
                   ],
@@ -166,7 +302,58 @@ class Profile extends StatelessWidget {
             ),
           ),
           Container(
-            height: 150,
+            height: 120,
+            color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                Opacity(
+                  opacity: 0.10,
+                  child: Container(
+                    height: 5,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color(0xff4dc591),
+                        width: 1,
+                      ),
+                      color: Color(0xff4dc591),
+                    ),
+                  ),
+                ),
+                Column(
+                  children: <Widget>[
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.only(top: 23, left: 21),
+                      child: Text(
+                        'Tên phụ huynh',
+                        style: TextStyle(
+                          color: Color(0xff413e55),
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 20, left: 21),
+                      alignment: Alignment.centerLeft,
+                      child: FutureBuilder<UserResponseModel>(
+                        future: userData,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(snapshot.data.parentName);
+                          } else if (snapshot.hasError) {
+                            return Text("${snapshot.error}");
+                          }
+                          return CircularProgressIndicator();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 120,
             color: Colors.white,
             child: Column(
               children: <Widget>[
@@ -199,12 +386,16 @@ class Profile extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(top: 20, left: 21),
                       alignment: Alignment.centerLeft,
-                      child: Text(
-                        "carol12ld@gmail.com", // truyen data tu login vao
-                        style: TextStyle(
-                          color: Color(0xff546e7a),
-                          fontSize: 20,
-                        ),
+                      child: FutureBuilder<UserResponseModel>(
+                        future: userData,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(snapshot.data.email);
+                          } else if (snapshot.hasError) {
+                            return Text("${snapshot.error}");
+                          }
+                          return CircularProgressIndicator();
+                        },
                       ),
                     ),
                   ],
@@ -246,12 +437,67 @@ class Profile extends StatelessWidget {
                     Container(
                       margin: EdgeInsets.only(top: 20, left: 21),
                       alignment: Alignment.centerLeft,
+                      child: FutureBuilder<UserResponseModel>(
+                        future: userData,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(snapshot.data.address);
+                          } else if (snapshot.hasError) {
+                            return Text("${snapshot.error}");
+                          }
+                          return CircularProgressIndicator();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 120,
+            color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                Opacity(
+                  opacity: 0.10,
+                  child: Container(
+                    height: 5,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Color(0xff4dc591),
+                        width: 1,
+                      ),
+                      color: Color(0xff4dc591),
+                    ),
+                  ),
+                ),
+                Column(
+                  children: <Widget>[
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      margin: EdgeInsets.only(top: 23, left: 21),
                       child: Text(
-                        "New York City, 26SD Street, Baram Store", // truyen data tu login vao
+                        'Ngày sinh',
                         style: TextStyle(
-                          color: Color(0xff546e7a),
-                          fontSize: 20,
+                          color: Color(0xff413e55),
+                          fontSize: 24,
                         ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 20, left: 21),
+                      alignment: Alignment.centerLeft,
+                      child: FutureBuilder<UserResponseModel>(
+                        future: userData,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Text(snapshot.data.birthday);
+                          } else if (snapshot.hasError) {
+                            return Text("${snapshot.error}");
+                          }
+                          return CircularProgressIndicator();
+                        },
                       ),
                     ),
                   ],
