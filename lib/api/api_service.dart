@@ -5,7 +5,7 @@ import 'package:lcss_mobile_app/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIService {
-  var urlBase = "https://lcss.herokuapp.com/";
+  var urlBase = "https://lcssapp.herokuapp.com/";
 
   Future<LoginResponseModel> login(LoginRequestModel loginRequestModel) async {
     var url = Uri.parse(urlBase + "login");
@@ -35,9 +35,9 @@ class APIService {
 
     final response = await http.get(url);
 
-    print(response);
-    print(response);
-    print(response);
+    print(response.body);
+    print(response.body);
+    print(response.body);
 
     if (response.statusCode == 200) {
       return UserResponseModel.fromJson(jsonDecode(response.body));
@@ -58,6 +58,22 @@ class APIService {
     String parentName,
   ) {
     var url = Uri.parse(urlBase + "accounts?username=" + username);
+
+    // print(username +
+    //     " ||| " +
+    //     name +
+    //     " ||| " +
+    //     address +
+    //     " ||| " +
+    //     email +
+    //     " ||| " +
+    //     birthday +
+    //     " ||| " +
+    //     phone +
+    //     " ||| " +
+    //     parentPhone +
+    //     " ||| " +
+    //     parentName);
 
     return http.put(
       url,

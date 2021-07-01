@@ -15,7 +15,7 @@ class LogInButton extends StatelessWidget {
         borderRadius: BorderRadius.all(const Radius.circular(30.0)),
       ),
       child: new Text(
-        "Sign In",
+        "Đăng nhập",
         style: new TextStyle(
           color: Colors.white,
           fontSize: 20.0,

@@ -6,6 +6,7 @@ import 'package:lcss_mobile_app/api/api_service.dart';
 import 'package:lcss_mobile_app/model/user_model.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -182,7 +183,7 @@ class Profile extends StatelessWidget {
                     future: userData,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return Text(snapshot.data.phone);
+                        return Text(snapshot.data.username);
                       } else if (snapshot.hasError) {
                         return Text("${snapshot.error}");
                       }
@@ -212,298 +213,541 @@ class Profile extends StatelessWidget {
         ),
         SliverList(
             delegate: SliverChildListDelegate([
-          Container(
-            height: 120,
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(top: 23, left: 21),
-                      child: Text(
-                        'Số điện thoại',
-                        style: TextStyle(
-                          color: Color(0xff413e55),
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20, left: 21),
-                      alignment: Alignment.centerLeft,
-                      child: FutureBuilder<UserResponseModel>(
-                        future: userData,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Text(snapshot.data.phone);
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          }
-                          return CircularProgressIndicator();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 120,
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Opacity(
-                      opacity: 0.10,
-                      child: Container(
-                        height: 5,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Color(0xff4dc591),
-                            width: 1,
+          FutureBuilder<UserResponseModel>(
+            future: userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.data.name != null &&
+                  snapshot.data.name != "") {
+                return Container(
+                  height: 120,
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.only(top: 23, left: 21),
+                            child: Text(
+                              'Tên học sinh',
+                              style: TextStyle(
+                                color: Color(0xff413e55),
+                                fontSize: 24,
+                              ),
+                            ),
                           ),
-                          color: Color(0xff4dc591),
-                        ),
+                          Container(
+                            margin: EdgeInsets.only(top: 20, left: 21),
+                            alignment: Alignment.centerLeft,
+                            child: FutureBuilder<UserResponseModel>(
+                              future: userData,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.name,
+                                    style: TextStyle(
+                                      color: Color(0xff546e7a),
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(top: 23, left: 21),
-                      child: Text(
-                        'Số điện thoại phụ huynh',
-                        style: TextStyle(
-                          color: Color(0xff413e55),
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20, left: 21),
-                      alignment: Alignment.centerLeft,
-                      child: FutureBuilder<UserResponseModel>(
-                        future: userData,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Text(snapshot.data.parentPhone);
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          }
-                          return CircularProgressIndicator();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 120,
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Opacity(
-                  opacity: 0.10,
-                  child: Container(
-                    height: 5,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color(0xff4dc591),
-                        width: 1,
-                      ),
-                      color: Color(0xff4dc591),
-                    ),
+                    ],
                   ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(top: 23, left: 21),
-                      child: Text(
-                        'Tên phụ huynh',
-                        style: TextStyle(
-                          color: Color(0xff413e55),
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20, left: 21),
-                      alignment: Alignment.centerLeft,
-                      child: FutureBuilder<UserResponseModel>(
-                        future: userData,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Text(snapshot.data.parentName);
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          }
-                          return CircularProgressIndicator();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                );
+              } else
+                return Container(width: 0.0, height: 0.0);
+            },
           ),
-          Container(
-            height: 120,
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Opacity(
-                  opacity: 0.10,
-                  child: Container(
-                    height: 5,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color(0xff4dc591),
-                        width: 1,
+          FutureBuilder<UserResponseModel>(
+            future: userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.data.phone != null &&
+                  snapshot.data.phone != "") {
+                return Container(
+                  height: 120,
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.10,
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xff4dc591),
+                                  width: 1,
+                                ),
+                                color: Color(0xff4dc591),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.only(top: 23, left: 21),
+                            child: Text(
+                              'Số điện thoại',
+                              style: TextStyle(
+                                color: Color(0xff413e55),
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 20, left: 21),
+                            alignment: Alignment.centerLeft,
+                            child: FutureBuilder<UserResponseModel>(
+                              future: userData,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.phone,
+                                    style: TextStyle(
+                                      color: Color(0xff546e7a),
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      color: Color(0xff4dc591),
-                    ),
+                    ],
                   ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(top: 23, left: 21),
-                      child: Text(
-                        'Email',
-                        style: TextStyle(
-                          color: Color(0xff413e55),
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20, left: 21),
-                      alignment: Alignment.centerLeft,
-                      child: FutureBuilder<UserResponseModel>(
-                        future: userData,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Text(snapshot.data.email);
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          }
-                          return CircularProgressIndicator();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                );
+              } else
+                return Container(width: 0.0, height: 0.0);
+              ;
+            },
           ),
-          Container(
-            height: 200,
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Opacity(
-                  opacity: 0.10,
-                  child: Container(
-                    height: 5,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color(0xff4dc591),
-                        width: 1,
+          FutureBuilder<UserResponseModel>(
+            future: userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.data.email != null &&
+                  snapshot.data.email != "") {
+                return Container(
+                  height: 120,
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.10,
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xff4dc591),
+                                  width: 1,
+                                ),
+                                color: Color(0xff4dc591),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.only(top: 23, left: 21),
+                            child: Text(
+                              'Email',
+                              style: TextStyle(
+                                color: Color(0xff413e55),
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 20, left: 21),
+                            alignment: Alignment.centerLeft,
+                            child: FutureBuilder<UserResponseModel>(
+                              future: userData,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.email,
+                                    style: TextStyle(
+                                      color: Color(0xff546e7a),
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      color: Color(0xff4dc591),
-                    ),
+                    ],
                   ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(top: 23, left: 21),
-                      child: Text(
-                        'Địa chỉ',
-                        style: TextStyle(
-                          color: Color(0xff413e55),
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20, left: 21),
-                      alignment: Alignment.centerLeft,
-                      child: FutureBuilder<UserResponseModel>(
-                        future: userData,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Text(snapshot.data.address);
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          }
-                          return CircularProgressIndicator();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                );
+              } else
+                return Container(width: 0.0, height: 0.0);
+              ;
+            },
           ),
-          Container(
-            height: 120,
-            color: Colors.white,
-            child: Column(
-              children: <Widget>[
-                Opacity(
-                  opacity: 0.10,
-                  child: Container(
-                    height: 5,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Color(0xff4dc591),
-                        width: 1,
+          FutureBuilder<UserResponseModel>(
+            future: userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.data.birthday != null &&
+                  snapshot.data.birthday != "") {
+                return Container(
+                  height: 120,
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.10,
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xff4dc591),
+                                  width: 1,
+                                ),
+                                color: Color(0xff4dc591),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.only(top: 23, left: 21),
+                            child: Text(
+                              'Ngày sinh',
+                              style: TextStyle(
+                                color: Color(0xff413e55),
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 20, left: 21),
+                            alignment: Alignment.centerLeft,
+                            child: FutureBuilder<UserResponseModel>(
+                              future: userData,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  DateTime dt =
+                                      DateTime.parse(snapshot.data.birthday);
+                                  DateFormat formatter =
+                                      new DateFormat('dd-MM-yyyy');
+                                  return Text(
+                                    formatter.format(dt),
+                                    style: TextStyle(
+                                      color: Color(0xff546e7a),
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      color: Color(0xff4dc591),
-                    ),
+                    ],
                   ),
-                ),
-                Column(
-                  children: <Widget>[
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(top: 23, left: 21),
-                      child: Text(
-                        'Ngày sinh',
-                        style: TextStyle(
-                          color: Color(0xff413e55),
-                          fontSize: 24,
-                        ),
+                );
+              } else
+                return Container(width: 0.0, height: 0.0);
+              ;
+            },
+          ),
+          FutureBuilder<UserResponseModel>(
+            future: userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.data.address != null &&
+                  snapshot.data.address != "") {
+                return Container(
+                  height: 150,
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.10,
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xff4dc591),
+                                  width: 1,
+                                ),
+                                color: Color(0xff4dc591),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.only(top: 23, left: 21),
+                            child: Text(
+                              'Địa chỉ',
+                              style: TextStyle(
+                                color: Color(0xff413e55),
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 20, left: 21),
+                            alignment: Alignment.centerLeft,
+                            child: FutureBuilder<UserResponseModel>(
+                              future: userData,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.address,
+                                    style: TextStyle(
+                                      color: Color(0xff546e7a),
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20, left: 21),
-                      alignment: Alignment.centerLeft,
-                      child: FutureBuilder<UserResponseModel>(
-                        future: userData,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Text(snapshot.data.birthday);
-                          } else if (snapshot.hasError) {
-                            return Text("${snapshot.error}");
-                          }
-                          return CircularProgressIndicator();
-                        },
+                    ],
+                  ),
+                );
+              } else
+                return Container(width: 0.0, height: 0.0);
+              ;
+            },
+          ),
+          FutureBuilder<UserResponseModel>(
+            future: userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.data.branchModels != null &&
+                  snapshot.data.branchModels.isNotEmpty) {
+                return Container(
+                  height: 150,
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.10,
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xff4dc591),
+                                  width: 1,
+                                ),
+                                color: Color(0xff4dc591),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.only(top: 23, left: 21),
+                            child: Text(
+                              'Tên chi nhánh',
+                              style: TextStyle(
+                                color: Color(0xff413e55),
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 20, left: 21),
+                            alignment: Alignment.centerLeft,
+                            child: FutureBuilder<UserResponseModel>(
+                              future: userData,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.branchModels
+                                        .elementAt(0)
+                                        .branchName,
+                                    style: TextStyle(
+                                      color: Color(0xff546e7a),
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    ],
+                  ),
+                );
+              } else
+                return Container(width: 0.0, height: 0.0);
+              ;
+            },
+          ),
+          FutureBuilder<UserResponseModel>(
+            future: userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.data.parentPhone != null &&
+                  snapshot.data.parentPhone != "") {
+                return Container(
+                  height: 120,
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.10,
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xff4dc591),
+                                  width: 1,
+                                ),
+                                color: Color(0xff4dc591),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.only(top: 23, left: 21),
+                            child: Text(
+                              'Số điện thoại phụ huynh',
+                              style: TextStyle(
+                                color: Color(0xff413e55),
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 20, left: 21),
+                            alignment: Alignment.centerLeft,
+                            child: FutureBuilder<UserResponseModel>(
+                              future: userData,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.parentPhone,
+                                    style: TextStyle(
+                                      color: Color(0xff546e7a),
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              } else
+                return Container(width: 0.0, height: 0.0);
+              ;
+            },
+          ),
+          FutureBuilder<UserResponseModel>(
+            future: userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.data.parentName != null &&
+                  snapshot.data.parentName != "") {
+                return Container(
+                  height: 120,
+                  color: Colors.white,
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.10,
+                            child: Container(
+                              height: 5,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Color(0xff4dc591),
+                                  width: 1,
+                                ),
+                                color: Color(0xff4dc591),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            margin: EdgeInsets.only(top: 23, left: 21),
+                            child: Text(
+                              'Tên phụ huynh',
+                              style: TextStyle(
+                                color: Color(0xff413e55),
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(top: 20, left: 21),
+                            alignment: Alignment.centerLeft,
+                            child: FutureBuilder<UserResponseModel>(
+                              future: userData,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data.parentName,
+                                    style: TextStyle(
+                                      color: Color(0xff546e7a),
+                                      fontSize: 20,
+                                    ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              } else
+                return Container(width: 0.0, height: 0.0);
+              ;
+            },
           ),
         ]))
       ],

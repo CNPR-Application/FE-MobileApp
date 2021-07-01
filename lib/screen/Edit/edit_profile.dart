@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
 import 'package:lcss_mobile_app/api/api_service.dart';
 import 'package:lcss_mobile_app/component/ProfileWidget.dart';
@@ -25,6 +26,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       parentPhoneUpdate,
       parentNameUpdate;
   int branchIdUpdate;
+
+  // bool _onChanged = false;
 
   @override
   void initState() {
@@ -56,77 +59,182 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             onClicked: () async {},
           ),
           const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Tên',
-            text: 'Quang',
-            onChanged: (name) => nameUpdate = name,
-            number: false,
+          FutureBuilder<UserResponseModel>(
+            future: widget.userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return TextFieldWidget(
+                  label: 'Tên',
+                  text: snapshot.data.name,
+                  onChanged: (name) {
+                    nameUpdate = name;
+                    // setState(() {
+                    //   _onChanged = true;
+                    // });
+                  },
+                  number: false,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
           ),
           const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Email',
-            text: 'quanghnse140846@fpt.edu.vn',
-            onChanged: (email) => emailUpdate = email,
-            number: false,
+          FutureBuilder<UserResponseModel>(
+            future: widget.userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return TextFieldWidget(
+                  label: 'Email',
+                  text: snapshot.data.email,
+                  onChanged: (email) => emailUpdate = email,
+                  number: false,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
           ),
           const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Ngày tháng năm sinh',
-            text: '29/10/2000',
-            onChanged: (birthday) => birthdayUpdate = birthday,
-            number: false,
+          FutureBuilder<UserResponseModel>(
+            future: widget.userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                DateTime dt = DateTime.parse(snapshot.data.birthday);
+                DateFormat formatter = new DateFormat('dd-MM-yyyy');
+                return TextFieldWidget(
+                  label: 'Ngày tháng năm sinh',
+                  text: formatter.format(dt),
+                  onChanged: (birthday) => birthdayUpdate = birthday,
+                  number: false,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
           ),
           const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Số điện thoại',
-            text: '0778181918',
-            onChanged: (phone) => phoneUpdate = phone,
-            number: false,
+          FutureBuilder<UserResponseModel>(
+            future: widget.userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return TextFieldWidget(
+                  label: 'Số điện thoại',
+                  text: snapshot.data.phone,
+                  onChanged: (phone) => phoneUpdate = phone,
+                  number: true,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
           ),
           const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Số điện thoại phụ huynh',
-            text: '0962564872',
-            onChanged: (parentPhone) => parentPhoneUpdate = parentPhone,
-            number: false,
+          FutureBuilder<UserResponseModel>(
+            future: widget.userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return TextFieldWidget(
+                  label: 'Số điện thoại phụ huynh',
+                  text: snapshot.data.parentPhone,
+                  onChanged: (parentPhone) => parentPhoneUpdate = parentPhone,
+                  number: false,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
           ),
           const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Tên phụ huynh',
-            text: 'Example',
-            onChanged: (parentName) => parentNameUpdate = parentName,
-            number: false,
+          FutureBuilder<UserResponseModel>(
+            future: widget.userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return TextFieldWidget(
+                  label: 'Tên phụ huynh',
+                  text: snapshot.data.parentName,
+                  onChanged: (parentName) => parentNameUpdate = parentName,
+                  number: false,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
           ),
           const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Mã chi nhánh',
-            text: '7',
-            onChanged: (branchId) => branchIdUpdate = branchId as int,
-            number: true,
+          FutureBuilder<UserResponseModel>(
+            future: widget.userData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return TextFieldWidget(
+                  label: 'Địa chỉ',
+                  text: snapshot.data.address,
+                  maxLines: 5,
+                  onChanged: (address) => addressUpdate = address,
+                  number: false,
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
           ),
           const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Địa chỉ',
-            text: 'Địa chỉ nhà',
-            maxLines: 5,
-            onChanged: (address) => addressUpdate = address,
-            number: false,
-          ),
-          const SizedBox(height: 24),
+          // _onChanged == true ?
           InkWell(
             onTap: () {
               // save data
-              APIService apiService = new APIService();
-              apiService.updateUserData(
-                  username,
-                  nameUpdate,
-                  addressUpdate,
-                  emailUpdate,
-                  birthdayUpdate,
-                  phoneUpdate,
-                  branchIdUpdate,
-                  parentPhoneUpdate,
-                  parentNameUpdate);
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return new AlertDialog(
+                    title: new Text('Are you sure to update your profile?'),
+                    actions: <Widget>[
+                      new TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: new Text('No'),
+                      ),
+                      new TextButton(
+                        onPressed: () {
+                          APIService apiService = new APIService();
+                          apiService.updateUserData(
+                              username,
+                              nameUpdate,
+                              addressUpdate,
+                              emailUpdate,
+                              birthdayUpdate,
+                              phoneUpdate,
+                              branchIdUpdate,
+                              parentPhoneUpdate,
+                              parentNameUpdate);
+                          Navigator.of(context).pop(false);
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return new AlertDialog(
+                                  title: new Text('Data Update Succesfully!'),
+                                  actions: <Widget>[
+                                    new TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(true),
+                                      child: new Text('Done'),
+                                    ),
+                                  ],
+                                );
+                              });
+                        },
+                        child: new Text('Yes'),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
             child: Container(
               width: 100,
@@ -146,7 +254,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
-          )
+          ),
+          // : Container(
+          //     width: 100,
+          //     height: 45,
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.all(Radius.circular(20)),
+          //       color: Colors.blueGrey[200],
+          //     ),
+          //     child: Align(
+          //       alignment: Alignment.center,
+          //       child: Text(
+          //         'Save',
+          //         style: TextStyle(
+          //           color: Colors.white,
+          //           fontSize: 16,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
         ],
       ),
     );
