@@ -25,7 +25,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       phoneUpdate,
       parentPhoneUpdate,
       parentNameUpdate;
-  int branchIdUpdate;
+  int branchId;
 
   // bool _onChanged = false;
 
@@ -63,11 +63,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             future: widget.userData,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                branchId = snapshot.data.branchModels.elementAt(0).branchId;
                 return TextFieldWidget(
                   label: 'Tên',
                   text: snapshot.data.name,
                   onChanged: (name) {
                     nameUpdate = name;
+                    print(name);
                     // setState(() {
                     //   _onChanged = true;
                     // });
@@ -88,7 +90,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 return TextFieldWidget(
                   label: 'Email',
                   text: snapshot.data.email,
-                  onChanged: (email) => emailUpdate = email,
+                  onChanged: (email) {
+                    emailUpdate = email;
+                    print(email);
+                  },
                   number: false,
                 );
               } else if (snapshot.hasError) {
@@ -107,8 +112,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 return TextFieldWidget(
                   label: 'Ngày tháng năm sinh',
                   text: formatter.format(dt),
-                  onChanged: (birthday) => birthdayUpdate = birthday,
+                  onChanged: (birthday) {
+                    print(birthday);
+                    birthdayUpdate = birthday;
+                  },
                   number: false,
+                  date: true,
                 );
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
@@ -124,7 +133,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 return TextFieldWidget(
                   label: 'Số điện thoại',
                   text: snapshot.data.phone,
-                  onChanged: (phone) => phoneUpdate = phone,
+                  onChanged: (phone) {
+                    phoneUpdate = phone;
+                    print(phoneUpdate);
+                  },
                   number: true,
                 );
               } else if (snapshot.hasError) {
@@ -142,7 +154,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   label: 'Số điện thoại phụ huynh',
                   text: snapshot.data.parentPhone,
                   onChanged: (parentPhone) => parentPhoneUpdate = parentPhone,
-                  number: false,
+                  number: true,
                 );
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
@@ -177,7 +189,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   text: snapshot.data.address,
                   maxLines: 5,
                   onChanged: (address) => addressUpdate = address,
-                  number: false,
                 );
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
@@ -210,7 +221,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               emailUpdate,
                               birthdayUpdate,
                               phoneUpdate,
-                              branchIdUpdate,
+                              branchId,
                               parentPhoneUpdate,
                               parentNameUpdate);
                           Navigator.of(context).pop(false);

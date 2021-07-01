@@ -77,9 +77,7 @@ class APIService {
 
     return http.put(
       url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: <String, String>{'Content-Type': 'application/json'},
       body: jsonEncode(<String, dynamic>{
         'name': name,
         'address': address,

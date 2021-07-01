@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class TextFieldWidget extends StatefulWidget {
   final int maxLines;
@@ -6,6 +8,7 @@ class TextFieldWidget extends StatefulWidget {
   final String text;
   final ValueChanged<String> onChanged;
   final bool number;
+  final bool date;
 
   const TextFieldWidget({
     Key key,
@@ -13,7 +16,8 @@ class TextFieldWidget extends StatefulWidget {
     this.label,
     this.text,
     this.onChanged,
-    this.number,
+    this.number = false,
+    this.date = false,
   }) : super(key: key);
 
   @override
@@ -22,6 +26,7 @@ class TextFieldWidget extends StatefulWidget {
 
 class _TextFieldWidgetState extends State<TextFieldWidget> {
   TextEditingController controller;
+  FocusNode _focusNode = new FocusNode();
 
   @override
   void initState() {
@@ -37,35 +42,72 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
     super.dispose();
   }
 
+  void _onLostFocus() {
+    if (!_focusNode.hasFocus) widget.onChanged(controller.text);
+  }
+
+  void _onPickingDate() {
+    widget.onChanged(controller.text);
+  }
+
   @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.label,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          widget.number == true
-              ? TextField(
-                  controller: controller,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+  Widget build(BuildContext context) {
+    _focusNode.addListener(_onLostFocus);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.label,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 8),
+        widget.number == true
+            ? TextField(
+                controller: controller,
+                focusNode: _focusNode,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  maxLines: widget.maxLines,
-                )
-              : TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  maxLines: widget.maxLines,
                 ),
-        ],
-      );
+                maxLines: widget.maxLines,
+              )
+            : widget.date == true
+                ? TextField(
+                    controller: controller,
+                    focusNode: _focusNode,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    maxLines: widget.maxLines,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                      showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2022))
+                          .then((value) {
+                        DateFormat formatter = new DateFormat('yyyy-MM-dd');
+                        controller.text = formatter.format(value);
+                        _onPickingDate();
+                      });
+                    },
+                  )
+                : TextField(
+                    controller: controller,
+                    focusNode: _focusNode,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    maxLines: widget.maxLines,
+                  )
+      ],
+    );
+  }
 }
