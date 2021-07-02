@@ -105,16 +105,18 @@ class StaggerAnimation extends StatelessWidget {
                             )
                           : null,
                 )
-              : new Container(
-                  width: buttonZoomOut.value,
-                  height: buttonZoomOut.value,
-                  decoration: new BoxDecoration(
-                    shape: buttonZoomOut.value < 500
-                        ? BoxShape.circle
-                        : BoxShape.rectangle,
-                    color: AppColor.greenTheme,
-                  ),
-                ),
+              : dataValid == true
+                  ? new Container(
+                      width: buttonZoomOut.value,
+                      height: buttonZoomOut.value,
+                      decoration: new BoxDecoration(
+                        shape: buttonZoomOut.value < 500
+                            ? BoxShape.circle
+                            : BoxShape.rectangle,
+                        color: AppColor.greenTheme,
+                      ),
+                    )
+                  : Container(),
         ),
       ),
     );
@@ -126,8 +128,23 @@ class StaggerAnimation extends StatelessWidget {
       if (buttonController.isCompleted && dataValid == true) {
         Navigator.pushNamed(context, "/home");
       }
-      if (!dataValid) {
-        Navigator.pushNamed(context, "/login");
+      if (buttonController.isCompleted && !dataValid) {
+        // Navigator.pushNamed(context, "/login");
+        showDialog(
+          context: context,
+          builder: (context) {
+            return new AlertDialog(
+              title: new Text('Username or password is not available'),
+              actions: <Widget>[
+                new TextButton(
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, "/login"),
+                  child: new Text('Yes'),
+                ),
+              ],
+            );
+          },
+        );
       }
     });
     return new AnimatedBuilder(

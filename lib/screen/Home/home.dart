@@ -39,6 +39,29 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<bool> _onWillPop() {
+    return showDialog(
+          context: context,
+          builder: (context) {
+            return new AlertDialog(
+              title: new Text('Are you sure to log out?'),
+              actions: <Widget>[
+                new TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: new Text('No'),
+                ),
+                new TextButton(
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, "/login"),
+                  child: new Text('Yes'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
   callLoad() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
@@ -50,62 +73,66 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Center(
-              child: _selectedIndex == 2
-                  ? Profile(
-                      userData: userData,
-                    )
-                  : _widgetOptions.elementAt(_selectedIndex),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: _isLoading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Center(
+                child: _selectedIndex == 2
+                    ? Profile(
+                        userData: userData,
+                      )
+                    : _widgetOptions.elementAt(_selectedIndex),
+              ),
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 20,
+                color: Colors.black.withOpacity(.1),
+              )
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+              child: GNav(
+                  rippleColor: Colors.grey[300],
+                  hoverColor: Colors.grey[100],
+                  gap: 8,
+                  activeColor: AppColor.greenTheme2,
+                  iconSize: 24,
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  duration: Duration(milliseconds: 400),
+                  tabBackgroundColor: AppColor.greenTheme.withOpacity(0.1),
+                  color: Colors.black,
+                  tabs: [
+                    GButton(
+                      icon: Icons.access_alarm,
+                      text: 'Schedule',
+                    ),
+                    GButton(
+                      icon: Icons.home_outlined,
+                      text: 'Home',
+                    ),
+                    GButton(
+                      icon: Icons.account_circle_outlined,
+                      text: 'Profile',
+                    ),
+                  ],
+                  selectedIndex: _selectedIndex,
+                  onTabChange: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  }),
             ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 20,
-              color: Colors.black.withOpacity(.1),
-            )
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-            child: GNav(
-                rippleColor: Colors.grey[300],
-                hoverColor: Colors.grey[100],
-                gap: 8,
-                activeColor: AppColor.greenTheme2,
-                iconSize: 24,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                duration: Duration(milliseconds: 400),
-                tabBackgroundColor: AppColor.greenTheme.withOpacity(0.1),
-                color: Colors.black,
-                tabs: [
-                  GButton(
-                    icon: Icons.access_alarm,
-                    text: 'Schedule',
-                  ),
-                  GButton(
-                    icon: Icons.home_outlined,
-                    text: 'Home',
-                  ),
-                  GButton(
-                    icon: Icons.account_circle_outlined,
-                    text: 'Profile',
-                  ),
-                ],
-                selectedIndex: _selectedIndex,
-                onTabChange: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                }),
           ),
         ),
       ),

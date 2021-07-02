@@ -130,40 +130,25 @@ class _LoginScreenState extends State<LoginScreen>
                             padding: const EdgeInsets.only(bottom: 50.0),
                             child: InkWell(
                               onTap: () {
-                                setState(() {
-                                  // if validating success
-                                  APIService apiService = new APIService();
-                                  apiService
-                                      .login(loginRequestModel)
-                                      .then((value) {
-                                    if (value != null) {
-                                      if (value.role == 'student') {
-                                        // ok
+                                // if validating success
+                                APIService apiService = new APIService();
+                                apiService
+                                    .login(loginRequestModel)
+                                    .then((value) {
+                                  if (value != null) {
+                                    if (value.role == 'student') {
+                                      // ok
+                                      setState(() {
                                         animationStatus = 1;
                                         _playAnimation();
-                                      }
-                                    } else if (value == null) {
-                                      animationStatus = 2;
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return new AlertDialog(
-                                            title: new Text(
-                                                'Username or password is not available'),
-                                            actions: <Widget>[
-                                              new TextButton(
-                                                onPressed: () => Navigator
-                                                    .pushReplacementNamed(
-                                                        context, "/login"),
-                                                child: new Text('Yes'),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                      _playAnimation();
+                                      });
                                     }
-                                  });
+                                  } else if (value == null) {
+                                    setState(() {
+                                      animationStatus = 2;
+                                      _playAnimation();
+                                    });
+                                  }
                                 });
                               },
                               child: new LogInButton(),
