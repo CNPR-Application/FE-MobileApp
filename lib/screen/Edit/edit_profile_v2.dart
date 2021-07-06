@@ -11,11 +11,11 @@ import 'package:lcss_mobile_app/model/user_model.dart';
 typedef StringValue = String Function(String);
 
 class EditPage extends StatefulWidget {
-  EditPage({Key key, this.username}) : super(key: key);
+  EditPage({Key key, this.userData}) : super(key: key);
   Function callback;
 
   Future<UserResponseModel> userData;
-  String username;
+  // String username;
 
   @override
   _EditPageState createState() => _EditPageState();
@@ -23,6 +23,13 @@ class EditPage extends StatefulWidget {
 
 class _EditPageState extends State<EditPage> {
   bool showPassword = false;
+  bool editedName = false;
+  bool editedAddress = false;
+  bool editedEmail = false;
+  bool editedBirthday = false;
+  bool editedPhone = false;
+  bool editedParentPhone = false;
+  bool editedParentName = false;
 
   String username;
   String nameSaved;
@@ -38,45 +45,53 @@ class _EditPageState extends State<EditPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    APIService apiService = new APIService();
-    widget.userData = apiService.getUserData(widget.username);
+    // APIService apiService = new APIService();
+    // widget.userData = apiService.getUserData(widget.username);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<UserResponseModel>(
-      future: widget.userData,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          branchId = snapshot.data.branchModels.elementAt(0).branchId;
-          username = snapshot.data.username;
-          DateTime dt = DateTime.parse(snapshot.data.birthday);
-          DateFormat formatter = new DateFormat('dd-MM-yyyy');
-          APIService apiService = new APIService();
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              elevation: 1,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: AppColor.greenTheme,
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-              ),
-              actions: [
-                IconButton(
-                  icon: Icon(
-                    Icons.notifications,
-                    color: AppColor.greenTheme,
-                  ),
-                  onPressed: () {},
-                ),
-              ],
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        elevation: 1,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: AppColor.greenTheme,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.notifications,
+              color: AppColor.greenTheme,
             ),
-            body: Container(
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: FutureBuilder<UserResponseModel>(
+        future: widget.userData,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            branchId = snapshot.data.branchModels.elementAt(0).branchId;
+            username = snapshot.data.username;
+            nameSaved = snapshot.data.name;
+            emailSaved = snapshot.data.email;
+            phoneSaved = snapshot.data.phone;
+            addressSaved = snapshot.data.address;
+            parentPhoneSaved = snapshot.data.parentPhone;
+            parentNameSaved = snapshot.data.parentName;
+
+            DateTime dt = DateTime.parse(snapshot.data.birthday);
+            DateFormat formatter = new DateFormat('dd-MM-yyyy');
+            DateFormat formatterInit = new DateFormat('yyyy-MM-dd');
+            birthdaySaved = formatterInit.format(dt);
+            return Container(
               padding: EdgeInsets.only(left: 16, top: 25, right: 16),
               child: GestureDetector(
                 onTap: () {
@@ -144,135 +159,207 @@ class _EditPageState extends State<EditPage> {
                       height: 35,
                     ),
                     buildTextField("Họ và tên", snapshot.data.name, false,
-                        callback: (value) => nameSaved = value),
+                        callback: (value) {
+                      if (value.trim() != "") {
+                        editedName = true;
+                      } else {
+                        editedName = false;
+                      }
+                      return nameSaved = value;
+                    }),
                     buildTextField("E-mail", snapshot.data.email, false,
-                        callback: (value) => emailSaved = value),
+                        callback: (value) {
+                      if (value.trim() != "") {
+                        editedEmail = true;
+                      } else {
+                        editedEmail = false;
+                      }
+                      return emailSaved = value;
+                    }),
                     buildTextField("Số điện thoại", snapshot.data.phone, false,
                         callback: (value) {
                       print(value);
+                      if (value.trim() != "") {
+                        editedPhone = true;
+                      } else {
+                        editedPhone = false;
+                      }
                       return phoneSaved = value;
                     }),
                     buildDateField("Ngày sinh", formatter.format(dt), false,
                         callback: (value) {
                       print(value);
+                      if (value.trim() != "") {
+                        editedBirthday = true;
+                      } else {
+                        editedBirthday = false;
+                      }
                       return birthdaySaved = value;
                     }),
                     buildTextField("Địa chỉ", snapshot.data.address, false,
-                        callback: (value) => addressSaved = value),
+                        callback: (value) {
+                      if (value.trim() != "") {
+                        editedAddress = true;
+                      } else {
+                        editedAddress = false;
+                      }
+                      return addressSaved = value;
+                    }),
                     buildTextField("Số điện thoại phụ huynh",
-                        snapshot.data.parentPhone, false,
-                        callback: (value) => parentPhoneSaved = value),
+                        snapshot.data.parentPhone, false, callback: (value) {
+                      if (value.trim() != "") {
+                        editedParentPhone = true;
+                      } else {
+                        editedParentPhone = false;
+                      }
+                      return parentPhoneSaved = value;
+                    }),
                     buildTextField(
                         "Tên phụ huynh", snapshot.data.parentName, false,
-                        callback: (value) => parentNameSaved = value),
+                        callback: (value) {
+                      if (value.trim() != "") {
+                        editedParentName = true;
+                      } else {
+                        editedParentName = false;
+                      }
+                      return parentNameSaved = value;
+                    }),
                     SizedBox(
                       height: 35,
                     ),
                   ],
                 ),
               ),
-            ),
-            bottomNavigationBar: Container(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 50),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                    ),
-                    onPressed: () {},
-                    child: Text("CANCEL",
-                        style: TextStyle(
-                            fontSize: 14,
-                            letterSpacing: 2.2,
-                            color: Colors.black)),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (nameSaved != null &&
-                          addressSaved != null &&
-                          emailSaved != null &&
-                          birthdaySaved != null &&
-                          phoneSaved != null &&
-                          branchId != null &&
-                          parentPhoneSaved != null &&
-                          parentNameSaved != null) {
-                        setState(() {
-                          var response = apiService.updateUserData(
-                              username,
-                              nameSaved,
-                              addressSaved,
-                              emailSaved,
-                              birthdaySaved,
-                              phoneSaved,
-                              branchId,
-                              parentPhoneSaved,
-                              parentNameSaved);
-                          print(response.toString());
-                          widget.userData = apiService.getUserData(username);
-                        });
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return new AlertDialog(
-                              title: new Text('Thông tin đã được chỉnh sửa!'),
-                              actions: <Widget>[
-                                new TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: new Text('Xác nhận'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return new AlertDialog(
-                              title: new Text(
-                                  'Xin vui lòng điền hết thông tin để cập nhật'),
-                              actions: <Widget>[
-                                new TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: new Text('Yes'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColor.greenTheme,
-                      onPrimary: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 50),
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                    ),
-                    child: Text(
-                      "SAVE",
-                      style: TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 2.2,
-                          color: Colors.white),
-                    ),
-                  )
-                ],
+            );
+          } else
+            return CircularProgressIndicator();
+        },
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
               ),
+              onPressed: () {},
+              child: Text("CANCEL",
+                  style: TextStyle(
+                      fontSize: 14, letterSpacing: 2.2, color: Colors.black)),
             ),
-          );
-        } else
-          return CircularProgressIndicator();
-      },
+            ElevatedButton(
+              onPressed: () {
+                if (nameSaved != null &&
+                    nameSaved.trim() != "" &&
+                    addressSaved != null &&
+                    addressSaved.trim() != "" &&
+                    emailSaved != null &&
+                    emailSaved.trim() != "" &&
+                    birthdaySaved != null &&
+                    birthdaySaved.trim() != "" &&
+                    phoneSaved != null &&
+                    phoneSaved.trim() != "" &&
+                    parentPhoneSaved != null &&
+                    parentPhoneSaved.trim() != "" &&
+                    parentNameSaved != null &&
+                    parentNameSaved.trim() != "") {
+                  if (editedName ||
+                      editedEmail ||
+                      editedPhone ||
+                      editedAddress ||
+                      editedBirthday ||
+                      editedParentName ||
+                      editedParentPhone) {
+                    setState(() {
+                      APIService apiService = new APIService();
+                      var response = apiService.updateUserData(
+                          username,
+                          nameSaved,
+                          addressSaved,
+                          emailSaved,
+                          birthdaySaved,
+                          phoneSaved,
+                          branchId,
+                          parentPhoneSaved,
+                          parentNameSaved);
+                      print(response.toString());
+                      widget.userData = apiService.getUserData(username);
+                    });
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return new AlertDialog(
+                          title: new Text('Thông tin đã được chỉnh sửa!'),
+                          actions: <Widget>[
+                            new TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: new Text('Xác nhận'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return new AlertDialog(
+                          title:
+                              new Text('Xin vui lòng cập nhật thông tin mới!'),
+                          actions: <Widget>[
+                            new TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: new Text('Chấp nhận'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return new AlertDialog(
+                        title: new Text(
+                            'Xin vui lòng không để trống thông tin cập nhật'),
+                        actions: <Widget>[
+                          new TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: new Text('Chấp nhận'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                primary: AppColor.greenTheme,
+                onPrimary: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 50),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+              ),
+              child: Text(
+                "SAVE",
+                style: TextStyle(
+                    fontSize: 14, letterSpacing: 2.2, color: Colors.white),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 

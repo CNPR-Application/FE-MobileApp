@@ -34,6 +34,7 @@ dependencies:
   shared_preferences: ^2.0.6
   intl: ^0.17.0
   cached_network_image: ^3.0.0
+  flare_flutter: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +57,7 @@ flutter:
     - assets/logo.svg
     - assets/vectors/edit.svg
     - assets/images/bg_profile.png
+    - assets/flare/bus.flr
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

@@ -6,6 +6,7 @@ import 'package:lcss_mobile_app/api/api_service.dart';
 import 'package:lcss_mobile_app/model/user_model.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile_v2.dart';
+import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -19,11 +20,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.w600);
   bool _isLoading = true;
   String username;
-  Future<UserResponseModel> userData;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -68,79 +67,102 @@ class _HomeScreenState extends State<HomeScreen> {
   callLoad() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
-    APIService apiService = new APIService();
-    userData = apiService.getUserData(username);
+    // APIService apiService = new APIService();
+    // userData = apiService.getUserData(username);
     print(username);
-    print(userData);
+    // print(userData);
+  }
+
+  Future<UserResponseModel> userDataFuture;
+
+  Future<UserResponseModel> userData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    username = prefs.getString("username");
+    APIService apiService = new APIService();
+    userDataFuture = apiService.getUserData(username);
+    return userDataFuture;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: _isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Center(
-                child: _selectedIndex == 2
-                    ? ProfileEightPage(
-                        userData: userData,
-                      )
-                    : _selectedIndex == 0
-                        ? Schedule()
-                        : Home(),
-              ),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 20,
-                color: Colors.black.withOpacity(.1),
-              )
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-              child: GNav(
-                  rippleColor: Colors.grey[300],
-                  hoverColor: Colors.grey[100],
-                  gap: 8,
-                  activeColor: AppColor.greenTheme2,
-                  iconSize: 24,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  duration: Duration(milliseconds: 400),
-                  tabBackgroundColor: AppColor.greenTheme.withOpacity(0.1),
-                  color: Colors.black,
-                  tabs: [
-                    GButton(
-                      icon: Icons.access_alarm,
-                      text: 'Schedule',
+    return FutureBuilder<UserResponseModel>(
+      future: userData(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return WillPopScope(
+            onWillPop: _onWillPop,
+            child: Scaffold(
+              backgroundColor: Colors.white,
+              body: _isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Center(
+                      child: _selectedIndex == 2
+                          ? ProfileEightPage(
+                              userData: userDataFuture,
+                            )
+                          : _selectedIndex == 0
+                              ? Schedule()
+                              : Home(
+                                  userData: userDataFuture,
+                                  username: username,
+                                ),
                     ),
-                    GButton(
-                      icon: Icons.home_outlined,
-                      text: 'Home',
-                    ),
-                    GButton(
-                      icon: Icons.account_circle_outlined,
-                      text: 'Profile',
-                    ),
+              bottomNavigationBar: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black.withOpacity(.1),
+                    )
                   ],
-                  selectedIndex: _selectedIndex,
-                  onTabChange: (index) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                  }),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15.0, vertical: 8),
+                    child: GNav(
+                        rippleColor: Colors.grey[300],
+                        hoverColor: Colors.grey[100],
+                        gap: 8,
+                        activeColor: AppColor.greenTheme2,
+                        iconSize: 24,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        duration: Duration(milliseconds: 400),
+                        tabBackgroundColor:
+                            AppColor.greenTheme.withOpacity(0.1),
+                        color: Colors.black,
+                        tabs: [
+                          GButton(
+                            icon: Icons.access_alarm,
+                            text: 'Schedule',
+                          ),
+                          GButton(
+                            icon: Icons.home_outlined,
+                            text: 'Home',
+                          ),
+                          GButton(
+                            icon: Icons.account_circle_outlined,
+                            text: 'Profile',
+                          ),
+                        ],
+                        selectedIndex: _selectedIndex,
+                        onTabChange: (index) {
+                          setState(() {
+                            _selectedIndex = index;
+                          });
+                        }),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
+          );
+        } else
+          return Intro5();
+      },
     );
   }
 }
@@ -151,20 +173,54 @@ TextStyle priceTextStyle =
     TextStyle(color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold);
 
 class Home extends StatelessWidget {
-  const Home({
+  Home({
     Key key,
+    this.userData,
+    this.username,
   }) : super(key: key);
+
+  Future<UserResponseModel> userData;
+  final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
+  String username;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        key: _key,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.grey.shade200,
+        centerTitle: true,
+        elevation: 0,
+        toolbarHeight: 80,
+        title: Text(
+          "Welcome" + " " + username,
+          style: TextStyle(color: Colors.black),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          color: Colors.black,
+          onPressed: () {
+            _key.currentState.openDrawer();
+          },
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.notifications_none_outlined,
+                color: AppColor.greenTheme,
+              )),
+        ],
+      ),
+      // drawer: _buildDrawer(),
       backgroundColor: Colors.grey.shade200,
       body: ListView(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
             child: Text(
-              "Categories",
+              "Khóa học bạn có thể thích",
               style: Theme.of(context).textTheme.title,
             ),
           ),
@@ -234,6 +290,79 @@ class Home extends StatelessWidget {
       ),
     );
   }
+
+  // _buildDrawer() {
+  //   final String image = images[0];
+  //   return ClipPath(
+  //     clipper: OvalRightBorderClipper(),
+  //     child: Drawer(
+  //       child: Container(
+  //         padding: const EdgeInsets.only(left: 16.0, right: 40),
+  //         decoration: BoxDecoration(
+  //             color: primary, boxShadow: [BoxShadow(color: Colors.black45)]),
+  //         width: 300,
+  //         child: SafeArea(
+  //           child: SingleChildScrollView(
+  //             child: Column(
+  //               children: <Widget>[
+  //                 Container(
+  //                   alignment: Alignment.centerRight,
+  //                   child: IconButton(
+  //                     icon: Icon(
+  //                       Icons.power_settings_new,
+  //                       color: active,
+  //                     ),
+  //                     onPressed: () {},
+  //                   ),
+  //                 ),
+  //                 Container(
+  //                   height: 90,
+  //                   alignment: Alignment.center,
+  //                   decoration: BoxDecoration(
+  //                       shape: BoxShape.circle,
+  //                       gradient: LinearGradient(
+  //                           colors: [Colors.orange, Colors.deepOrange])),
+  //                   child: CircleAvatar(
+  //                     radius: 40,
+  //                     backgroundImage: NetworkImage(image),
+  //                   ),
+  //                 ),
+  //                 SizedBox(height: 5.0),
+  //                 Text(
+  //                   "erika costell",
+  //                   style: TextStyle(
+  //                       color: Colors.black,
+  //                       fontSize: 18.0,
+  //                       fontWeight: FontWeight.w600),
+  //                 ),
+  //                 Text(
+  //                   "@erika07",
+  //                   style: TextStyle(color: active, fontSize: 16.0),
+  //                 ),
+  //                 SizedBox(height: 30.0),
+  //                 _buildRow(Icons.home, "Home"),
+  //                 _buildDivider(),
+  //                 _buildRow(Icons.person_pin, "My profile"),
+  //                 _buildDivider(),
+  //                 _buildRow(Icons.message, "Messages", showBadge: true),
+  //                 _buildDivider(),
+  //                 _buildRow(Icons.notifications, "Notifications",
+  //                     showBadge: true),
+  //                 _buildDivider(),
+  //                 _buildRow(Icons.settings, "Settings"),
+  //                 _buildDivider(),
+  //                 _buildRow(Icons.email, "Contact us"),
+  //                 _buildDivider(),
+  //                 _buildRow(Icons.info_outline, "Help"),
+  //                 _buildDivider(),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // Chỗ này sẽ update data truyền vào (lấy từ API)
   Widget _featuredProduct(BuildContext context) {
@@ -312,6 +441,7 @@ class Home extends StatelessWidget {
   }
 }
 
+// Ở đây trong tương lai cũng sẽ truyền data vào (Data từ API)
 class ProductListItem extends StatelessWidget {
   final Function onPressed;
   const ProductListItem({Key key, this.onPressed}) : super(key: key);
@@ -355,11 +485,11 @@ class ProductListItem extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Text("Drawer Table"),
+                            Text("Nhật Ngữ N2"),
                             SizedBox(
                               height: 5,
                             ),
-                            Text("Rs. 8000", style: priceTextStyle)
+                            Text("1200000\$", style: priceTextStyle)
                           ],
                         ),
                       ),
@@ -389,7 +519,6 @@ final List<String> weekDays = ["S", "M", "T", "W", "T", "F", "S"];
 final List<int> dates = [5, 6, 7, 8, 9, 10, 11];
 
 class Schedule extends StatelessWidget {
-  static final String path = "lib/src/pages/todo/todo2.dart";
   final int selected = 5;
   final TextStyle selectedText = TextStyle(
     color: Colors.deepOrange,
@@ -406,7 +535,7 @@ class Schedule extends StatelessWidget {
       appBar: AppBar(
         brightness: Brightness.light,
         iconTheme: IconThemeData(color: Colors.black),
-        title: Text('My Week'),
+        title: Text('Tuần lễ của tôi'),
         backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
@@ -420,7 +549,7 @@ class Schedule extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
                 child: Text(
-                  "January".toUpperCase(),
+                  "Tháng 1".toUpperCase(),
                   style: TextStyle(
                       color: Colors.grey.shade700,
                       fontWeight: FontWeight.bold,
@@ -518,7 +647,7 @@ class Schedule extends StatelessWidget {
                 bottomRight: Radius.circular(20.0),
                 bottomLeft: Radius.circular(20.0),
               ),
-              color: Colors.white70,
+              color: Colors.white,
             ),
             padding:
                 const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
@@ -529,16 +658,17 @@ class Schedule extends StatelessWidget {
                 Text(
                   "10:30 - 11:30AM",
                   style:
-                      TextStyle(letterSpacing: 2.5, color: Colors.deepPurple),
+                      TextStyle(letterSpacing: 2.5, color: AppColor.greenTheme),
                 ),
                 const SizedBox(height: 5.0),
                 Text(
-                  "Meeting With",
+                  "Anh Ngữ Giao Tiếp",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
+                      color: AppColor.greenTheme,
                       fontSize: 16.0),
                 ),
+                // const SizedBox(height: 5.0),
                 Text("John Doe")
               ],
             ),
@@ -560,7 +690,7 @@ class Schedule extends StatelessWidget {
           ),
           const SizedBox(height: 5.0),
           Text(
-            "Meeting With",
+            "Anh Ngữ Giao Tiếp",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -584,7 +714,7 @@ class HeaderWidget extends StatelessWidget {
       this.body,
       this.header,
       this.headerColor = Colors.white,
-      this.backColor = Colors.deepPurple})
+      this.backColor = AppColor.greenTheme})
       : super(key: key);
 
   @override
@@ -689,7 +819,7 @@ class ProfileEightPage extends StatelessWidget {
                               context,
                               new MaterialPageRoute(
                                 builder: (context) => new EditPage(
-                                  username: snapshot.data.username,
+                                  userData: userData,
                                 ),
                               ),
                             );

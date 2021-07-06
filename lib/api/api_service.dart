@@ -82,7 +82,6 @@ class APIService {
         'branchId': branchId,
         'parentPhone': parentPhone,
         'parentName': parentName,
-        'is_available': true,
       }),
     );
 
