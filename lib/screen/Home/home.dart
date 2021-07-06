@@ -24,13 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   String username;
   Future<UserResponseModel> userData;
-  static List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Schedule',
-      style: optionStyle,
-    ),
-    Home(),
-  ];
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -96,7 +89,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? ProfileEightPage(
                         userData: userData,
                       )
-                    : _widgetOptions.elementAt(_selectedIndex),
+                    : _selectedIndex == 0
+                        ? Schedule()
+                        : Home(),
               ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
@@ -150,647 +145,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class Profile extends StatelessWidget {
-  Profile({Key key, this.userData}) : super(key: key);
+// HOME START
 
-  Future<UserResponseModel> userData;
-
-  Widget buildImage() {
-    final image = NetworkImage(
-        'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');
-
-    return ClipOval(
-      child: Material(
-        color: Colors.transparent,
-        child: Ink.image(
-          image: image,
-          fit: BoxFit.cover,
-          height: 100,
-          width: 100,
-          child: InkWell(),
-        ),
-      ),
-    );
-  }
-
-  final Widget editVector =
-      SvgPicture.asset('assets/vectors/edit.svg', semanticsLabel: 'vector');
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverAppBar(
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.edit,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                    builder: (context) => new EditProfileScreen(
-                      userData: userData,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-          backgroundColor: Colors.black,
-          automaticallyImplyLeading: false,
-          expandedHeight: 200,
-          stretch: true,
-          pinned: true,
-          flexibleSpace: Stack(
-            children: <Widget>[
-              FlexibleSpaceBar(
-                collapseMode: CollapseMode.pin,
-                centerTitle: true,
-                stretchModes: <StretchMode>[
-                  StretchMode.zoomBackground,
-                  StretchMode.blurBackground,
-                  StretchMode.fadeTitle,
-                ],
-                title: Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: FutureBuilder<UserResponseModel>(
-                    future: userData,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Text(snapshot.data.username);
-                      } else if (snapshot.hasError) {
-                        return Text("${snapshot.error}");
-                      }
-                      return CircularProgressIndicator();
-                    },
-                  ),
-                ),
-                background: new Image.network(
-                  'https://images.unsplash.com/photo-1558898479-33c0057a5d12?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80',
-                  // image link se update sau
-                  fit: BoxFit.fill,
-                  colorBlendMode: BlendMode.darken,
-                  color: Colors.black45,
-                ),
-              ),
-              // Center(
-              //   child: Row(
-              //     children: <Widget>[
-              //       Spacer(),
-              //       buildImage(),
-              //       Spacer(),
-              //     ],
-              //   ),
-              // ),
-            ],
-          ),
-        ),
-        SliverList(
-            delegate: SliverChildListDelegate([
-          FutureBuilder<UserResponseModel>(
-            future: userData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data.name != null &&
-                  snapshot.data.name != "") {
-                return Container(
-                  height: 120,
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.only(top: 23, left: 21),
-                            child: Text(
-                              'Tên học sinh',
-                              style: TextStyle(
-                                color: Color(0xff413e55),
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 21),
-                            alignment: Alignment.centerLeft,
-                            child: FutureBuilder<UserResponseModel>(
-                              future: userData,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.name,
-                                    style: TextStyle(
-                                      color: Color(0xff546e7a),
-                                      fontSize: 20,
-                                    ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
-                return Container(width: 0.0, height: 0.0);
-            },
-          ),
-          FutureBuilder<UserResponseModel>(
-            future: userData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data.phone != null &&
-                  snapshot.data.phone != "") {
-                return Container(
-                  height: 120,
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.10,
-                            child: Container(
-                              height: 5,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(0xff4dc591),
-                                  width: 1,
-                                ),
-                                color: Color(0xff4dc591),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.only(top: 23, left: 21),
-                            child: Text(
-                              'Số điện thoại',
-                              style: TextStyle(
-                                color: Color(0xff413e55),
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 21),
-                            alignment: Alignment.centerLeft,
-                            child: FutureBuilder<UserResponseModel>(
-                              future: userData,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.phone,
-                                    style: TextStyle(
-                                      color: Color(0xff546e7a),
-                                      fontSize: 20,
-                                    ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
-                return Container(width: 0.0, height: 0.0);
-              ;
-            },
-          ),
-          FutureBuilder<UserResponseModel>(
-            future: userData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data.email != null &&
-                  snapshot.data.email != "") {
-                return Container(
-                  height: 120,
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.10,
-                            child: Container(
-                              height: 5,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(0xff4dc591),
-                                  width: 1,
-                                ),
-                                color: Color(0xff4dc591),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.only(top: 23, left: 21),
-                            child: Text(
-                              'Email',
-                              style: TextStyle(
-                                color: Color(0xff413e55),
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 21),
-                            alignment: Alignment.centerLeft,
-                            child: FutureBuilder<UserResponseModel>(
-                              future: userData,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.email,
-                                    style: TextStyle(
-                                      color: Color(0xff546e7a),
-                                      fontSize: 20,
-                                    ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
-                return Container(width: 0.0, height: 0.0);
-              ;
-            },
-          ),
-          FutureBuilder<UserResponseModel>(
-            future: userData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data.birthday != null &&
-                  snapshot.data.birthday != "") {
-                return Container(
-                  height: 120,
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.10,
-                            child: Container(
-                              height: 5,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(0xff4dc591),
-                                  width: 1,
-                                ),
-                                color: Color(0xff4dc591),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.only(top: 23, left: 21),
-                            child: Text(
-                              'Ngày sinh',
-                              style: TextStyle(
-                                color: Color(0xff413e55),
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 21),
-                            alignment: Alignment.centerLeft,
-                            child: FutureBuilder<UserResponseModel>(
-                              future: userData,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  DateTime dt =
-                                      DateTime.parse(snapshot.data.birthday);
-                                  DateFormat formatter =
-                                      new DateFormat('dd-MM-yyyy');
-                                  return Text(
-                                    formatter.format(dt),
-                                    style: TextStyle(
-                                      color: Color(0xff546e7a),
-                                      fontSize: 20,
-                                    ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
-                return Container(width: 0.0, height: 0.0);
-              ;
-            },
-          ),
-          FutureBuilder<UserResponseModel>(
-            future: userData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data.address != null &&
-                  snapshot.data.address != "") {
-                return Container(
-                  height: 150,
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.10,
-                            child: Container(
-                              height: 5,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(0xff4dc591),
-                                  width: 1,
-                                ),
-                                color: Color(0xff4dc591),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.only(top: 23, left: 21),
-                            child: Text(
-                              'Địa chỉ',
-                              style: TextStyle(
-                                color: Color(0xff413e55),
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 21),
-                            alignment: Alignment.centerLeft,
-                            child: FutureBuilder<UserResponseModel>(
-                              future: userData,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.address,
-                                    style: TextStyle(
-                                      color: Color(0xff546e7a),
-                                      fontSize: 20,
-                                    ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
-                return Container(width: 0.0, height: 0.0);
-              ;
-            },
-          ),
-          FutureBuilder<UserResponseModel>(
-            future: userData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data.branchModels != null &&
-                  snapshot.data.branchModels.isNotEmpty) {
-                return Container(
-                  height: 150,
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.10,
-                            child: Container(
-                              height: 5,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(0xff4dc591),
-                                  width: 1,
-                                ),
-                                color: Color(0xff4dc591),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.only(top: 23, left: 21),
-                            child: Text(
-                              'Tên chi nhánh',
-                              style: TextStyle(
-                                color: Color(0xff413e55),
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 21),
-                            alignment: Alignment.centerLeft,
-                            child: FutureBuilder<UserResponseModel>(
-                              future: userData,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.branchModels
-                                        .elementAt(0)
-                                        .branchName,
-                                    style: TextStyle(
-                                      color: Color(0xff546e7a),
-                                      fontSize: 20,
-                                    ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
-                return Container(width: 0.0, height: 0.0);
-              ;
-            },
-          ),
-          FutureBuilder<UserResponseModel>(
-            future: userData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data.parentPhone != null &&
-                  snapshot.data.parentPhone != "") {
-                return Container(
-                  height: 120,
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.10,
-                            child: Container(
-                              height: 5,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(0xff4dc591),
-                                  width: 1,
-                                ),
-                                color: Color(0xff4dc591),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.only(top: 23, left: 21),
-                            child: Text(
-                              'Số điện thoại phụ huynh',
-                              style: TextStyle(
-                                color: Color(0xff413e55),
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 21),
-                            alignment: Alignment.centerLeft,
-                            child: FutureBuilder<UserResponseModel>(
-                              future: userData,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.parentPhone,
-                                    style: TextStyle(
-                                      color: Color(0xff546e7a),
-                                      fontSize: 20,
-                                    ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
-                return Container(width: 0.0, height: 0.0);
-              ;
-            },
-          ),
-          FutureBuilder<UserResponseModel>(
-            future: userData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData &&
-                  snapshot.data.parentName != null &&
-                  snapshot.data.parentName != "") {
-                return Container(
-                  height: 120,
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.10,
-                            child: Container(
-                              height: 5,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Color(0xff4dc591),
-                                  width: 1,
-                                ),
-                                color: Color(0xff4dc591),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            margin: EdgeInsets.only(top: 23, left: 21),
-                            child: Text(
-                              'Tên phụ huynh',
-                              style: TextStyle(
-                                color: Color(0xff413e55),
-                                fontSize: 24,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 20, left: 21),
-                            alignment: Alignment.centerLeft,
-                            child: FutureBuilder<UserResponseModel>(
-                              future: userData,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text(
-                                    snapshot.data.parentName,
-                                    style: TextStyle(
-                                      color: Color(0xff546e7a),
-                                      fontSize: 20,
-                                    ),
-                                  );
-                                } else if (snapshot.hasError) {
-                                  return Text("${snapshot.error}");
-                                }
-                                return CircularProgressIndicator();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              } else
-                return Container(width: 0.0, height: 0.0);
-              ;
-            },
-          ),
-        ]))
-      ],
-    );
-  }
-}
+TextStyle priceTextStyle =
+    TextStyle(color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold);
 
 class Home extends StatelessWidget {
   const Home({
@@ -799,42 +157,496 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8),
-      child: Column(
+    return Scaffold(
+      backgroundColor: Colors.grey.shade200,
+      body: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
+            child: Text(
+              "Categories",
+              style: Theme.of(context).textTheme.title,
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            height: 150,
+            margin: EdgeInsets.only(top: 15),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 8,
+              itemBuilder: (BuildContext context, int index) {
+                return _categoryList(context);
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
+            child: Text(
+              "Lớp học hiện có",
+              style: Theme.of(context).textTheme.title,
+            ),
+          ),
+          SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            height: 150,
+            margin: EdgeInsets.only(top: 15),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 5,
+              itemBuilder: (BuildContext context, int index) {
+                return _featuredProduct(context);
+              },
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            color: Colors.grey.shade300,
+            height: 60.0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    "Lịch sử đăng ký",
+                    style: Theme.of(context).textTheme.title,
+                  ),
+                  Spacer(),
+                  InkWell(
+                    onTap: () {
+                      print("hello");
+                    },
+                    child: Text("View all"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 4.0),
+          ...[1, 2, 3, 4, 5].map(
+            (product) => ProductListItem(
+              onPressed: () {},
+            ),
+          ),
+          const SizedBox(height: 10.0),
+        ],
+      ),
+    );
+  }
+
+  // Chỗ này sẽ update data truyền vào (lấy từ API)
+  Widget _featuredProduct(BuildContext context) {
+    return InkWell(
+      onTap: () {},
+      child: Stack(
         children: <Widget>[
           Container(
-            margin: const EdgeInsets.fromLTRB(0, 33, 0, 33),
-            child: Stack(
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.topRight,
-                  child: CircleAvatar(
-                    // backgroundImage: NetworkImage(userAvatarUrl),
-                    radius: 32,
-                    backgroundColor: Colors.green[200],
-                    child: const Text('NQ'),
-                  ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.grey,
+              image: DecorationImage(
+                image: NetworkImage(
+                    'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F1.jpg?alt=media'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            alignment: Alignment.center,
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            width: 150,
+            height: 150,
+          ),
+          Positioned(
+            bottom: 0,
+            left: 10,
+            right: 10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 16.0,
+              ),
+              color: Colors.black87,
+              child: Text(
+                "Sofa Set",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 18.0,
                 ),
-              ],
+              ),
             ),
           ),
           SizedBox(
-            width: 315,
-            child: Text(
-              "Chúc bạn một ngày tốt đẹp!",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 32,
-                height: 1.5,
-              ),
-            ),
+            height: 10,
           ),
         ],
       ),
     );
   }
+
+  Widget _categoryList(BuildContext context) {
+    return InkWell(
+      onTap: () {},
+      child: Column(
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.black12,
+                image: DecorationImage(
+                    image: NetworkImage(
+                        'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F3.jpg?alt=media'),
+                    fit: BoxFit.cover)),
+            alignment: Alignment.center,
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            width: 100,
+            height: 100,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text("Tables")
+        ],
+      ),
+    );
+  }
 }
+
+class ProductListItem extends StatelessWidget {
+  final Function onPressed;
+  const ProductListItem({Key key, this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: MaterialButton(
+        padding: const EdgeInsets.all(0),
+        elevation: 0.5,
+        color: Colors.white,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        onPressed: onPressed as void Function(),
+        child: Row(
+          children: <Widget>[
+            Ink(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                image: DecorationImage(
+                  image: NetworkImage(
+                      'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F2.jpg?alt=media'),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Text("Drawer Table"),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Text("Rs. 8000", style: priceTextStyle)
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.arrow_right_alt_rounded,
+                          size: 22,
+                        ),
+                        onPressed: () {
+                          print('tapped');
+                        },
+                      )
+                    ],
+                  )),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// HOME END
+
+// Schedule START
+final List<String> weekDays = ["S", "M", "T", "W", "T", "F", "S"];
+final List<int> dates = [5, 6, 7, 8, 9, 10, 11];
+
+class Schedule extends StatelessWidget {
+  static final String path = "lib/src/pages/todo/todo2.dart";
+  final int selected = 5;
+  final TextStyle selectedText = TextStyle(
+    color: Colors.deepOrange,
+    fontWeight: FontWeight.bold,
+  );
+  final TextStyle daysText = TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.grey.shade800,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        brightness: Brightness.light,
+        iconTheme: IconThemeData(color: Colors.black),
+        title: Text('My Week'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+      ),
+      body: HeaderWidget(
+        header: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Text(
+                  "January".toUpperCase(),
+                  style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                      letterSpacing: 2.0),
+                ),
+              ),
+              Row(
+                children: weekDays.map((w) {
+                  return Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: weekDays.indexOf(w) == selected
+                              ? Colors.orange.shade100
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(30.0))),
+                      padding: const EdgeInsets.only(top: 20, bottom: 8.0),
+                      child: Text(
+                        w,
+                        style: weekDays.indexOf(w) == selected
+                            ? selectedText
+                            : daysText,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              Row(
+                children: dates.map((d) {
+                  return Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: dates.indexOf(d) == selected
+                              ? Colors.orange.shade100
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.vertical(
+                              bottom: Radius.circular(30.0))),
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 20.0),
+                      child: Text("$d",
+                          style: dates.indexOf(d) == selected
+                              ? selectedText
+                              : daysText),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 10.0),
+            ],
+          ),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _buildTaskWithDate(),
+              const SizedBox(height: 20.0),
+              _buildTask(),
+              const SizedBox(height: 20.0),
+              _buildTask(),
+              const SizedBox(height: 20.0),
+              _buildTaskWithDate(),
+              const SizedBox(height: 20.0),
+              _buildTask(),
+              const SizedBox(height: 20.0),
+              _buildTask(),
+              const SizedBox(height: 20.0),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Row _buildTaskWithDate() {
+    return Row(
+      children: <Widget>[
+        Text(
+          "JAN\n10",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5),
+        ),
+        const SizedBox(width: 20.0),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                bottomRight: Radius.circular(20.0),
+                bottomLeft: Radius.circular(20.0),
+              ),
+              color: Colors.white70,
+            ),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+            width: double.infinity,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "10:30 - 11:30AM",
+                  style:
+                      TextStyle(letterSpacing: 2.5, color: Colors.deepPurple),
+                ),
+                const SizedBox(height: 5.0),
+                Text(
+                  "Meeting With",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple,
+                      fontSize: 16.0),
+                ),
+                Text("John Doe")
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Container _buildTask() {
+    return Container(
+      padding: const EdgeInsets.only(left: 70.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "10:30 - 11:30AM",
+            style: TextStyle(letterSpacing: 2.5, color: Colors.white),
+          ),
+          const SizedBox(height: 5.0),
+          Text(
+            "Meeting With",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 16.0),
+          ),
+          Text("John Doe")
+        ],
+      ),
+    );
+  }
+}
+
+class HeaderWidget extends StatelessWidget {
+  final Widget body;
+  final Widget header;
+  final Color headerColor;
+  final Color backColor;
+
+  const HeaderWidget(
+      {Key key,
+      this.body,
+      this.header,
+      this.headerColor = Colors.white,
+      this.backColor = Colors.deepPurple})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildBody();
+  }
+
+  Stack _buildBody() {
+    return Stack(
+      children: <Widget>[
+        Positioned(
+          right: 0,
+          top: 0,
+          width: 10,
+          height: 200,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+                color: backColor,
+                borderRadius:
+                    BorderRadius.only(topLeft: Radius.circular(20.0))),
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 100,
+          width: 50,
+          bottom: 0,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: backColor,
+            ),
+          ),
+        ),
+        Column(
+          children: <Widget>[
+            if (header != null)
+              Container(
+                  margin: const EdgeInsets.only(right: 10.0),
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.only(bottomRight: Radius.circular(20.0)),
+                    color: headerColor,
+                  ),
+                  child: header),
+            if (body != null)
+              Expanded(
+                child: Material(
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.only(topLeft: Radius.circular(30.0))),
+                    elevation: 0,
+                    color: backColor,
+                    child: body),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// Schedule END
 
 // Profile Content START
 class ProfileEightPage extends StatelessWidget {
