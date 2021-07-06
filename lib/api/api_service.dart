@@ -17,7 +17,9 @@ class APIService {
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
       body: msg,
     );
 
@@ -33,14 +35,21 @@ class APIService {
   Future<UserResponseModel> getUserData(String username) async {
     var url = Uri.parse(urlBase + "accounts/" + username);
 
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
     print(response.body);
     print(response.body);
     print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      return UserResponseModel.fromJson(jsonDecode(response.body));
+      return UserResponseModel.fromJson(jsonDecode(decodeData));
     } else {
       return null;
     }
@@ -56,28 +65,14 @@ class APIService {
     int branchId,
     String parentPhone,
     String parentName,
-  ) {
+  ) async {
     var url = Uri.parse(urlBase + "accounts?username=" + username);
 
-    // print(username +
-    //     " ||| " +
-    //     name +
-    //     " ||| " +
-    //     address +
-    //     " ||| " +
-    //     email +
-    //     " ||| " +
-    //     birthday +
-    //     " ||| " +
-    //     phone +
-    //     " ||| " +
-    //     parentPhone +
-    //     " ||| " +
-    //     parentName);
-
-    return http.put(
+    var response = await http.put(
       url,
-      headers: <String, String>{'Content-Type': 'application/json'},
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
       body: jsonEncode(<String, dynamic>{
         'name': name,
         'address': address,
@@ -87,7 +82,18 @@ class APIService {
         'branchId': branchId,
         'parentPhone': parentPhone,
         'parentName': parentName,
+        'is_available': true,
       }),
     );
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return response;
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to update user data.');
+    }
   }
 }

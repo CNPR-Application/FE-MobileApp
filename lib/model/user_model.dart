@@ -12,6 +12,7 @@ class UserResponseModel {
   String parentName;
   String experience;
   String rating;
+  String image;
 
   UserResponseModel({
     this.username,
@@ -27,6 +28,7 @@ class UserResponseModel {
     this.parentName,
     this.experience,
     this.rating,
+    this.image,
   });
 
   factory UserResponseModel.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,7 @@ class UserResponseModel {
       parentName: json["parentName"] != null ? json["parentName"] : "",
       experience: json["experience"],
       rating: json["rating"] != null ? json["rating"] : "",
+      image: json["image"] != null ? json["image"] : "",
     );
   }
 }
