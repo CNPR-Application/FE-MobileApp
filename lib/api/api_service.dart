@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:lcss_mobile_app/model/booking_model.dart';
+import 'package:lcss_mobile_app/model/class_model.dart';
 import 'package:lcss_mobile_app/model/login_model.dart';
+import 'package:lcss_mobile_app/model/shift_model.dart';
+import 'package:lcss_mobile_app/model/subject_model.dart';
 import 'package:lcss_mobile_app/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,9 +15,6 @@ class APIService {
     var url = Uri.parse(urlBase + "login");
 
     final msg = jsonEncode(loginRequestModel);
-    print(msg);
-    print(msg);
-    print(msg);
 
     final response = await http.post(
       url,
@@ -93,6 +94,114 @@ class APIService {
       // If the server did not return a 200 OK response,
       // then throw an exception.
       throw Exception('Failed to update user data.');
+    }
+  }
+
+  Future<ShiftResponseModel> getAllShiftData(int pageNo, int pageSize) async {
+    var url = Uri.parse(urlBase +
+        "shifts?isAvailable=1&pageNo=" +
+        pageNo.toString().trim() +
+        "&pageSize=" +
+        pageSize.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return ShiftResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<SubjectResponseModel> getAllSubjectData(
+      int pageNo, int pageSize) async {
+    var url = Uri.parse(urlBase +
+        "subjects?name=&isAvailable=1&pageNo=" +
+        pageNo.toString().trim() +
+        "&pageSize=" +
+        pageSize.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return SubjectResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<ClassResponseModel> getAllWaitingClass(
+      int pageNo, int pageSize, int branchId) async {
+    print(branchId.toString());
+    var url = Uri.parse(urlBase +
+        "classes?branchId=" +
+        branchId.toString().trim() +
+        "&subjectId=&shiftId=&status=waiting&pageNo=" +
+        pageNo.toString().trim() +
+        "&pageSize=" +
+        pageSize.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return ClassResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<BookingResponseModel> getAllBookingOfStudent(
+      int pageNo, int pageSize, String username) async {
+    var url = Uri.parse(urlBase +
+        "bookings?studentUsername=" +
+        username +
+        "&pageNo=" +
+        pageNo.toString().trim() +
+        "&pageSize=" +
+        pageSize.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return BookingResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
     }
   }
 }

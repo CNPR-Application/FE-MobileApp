@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lcss_mobile_app/Screen/Home/home.dart';
 import 'package:lcss_mobile_app/Screen/Login/login.dart';
+import 'package:lcss_mobile_app/screen/Class/search_class.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
+import 'package:lcss_mobile_app/screen/Subject/search_subject.dart';
 
 class Routes {
   Routes() {
@@ -25,6 +27,16 @@ class Routes {
           case '/editProfile':
             return new MyCustomRoute(
               builder: (_) => new EditProfileScreen(),
+              settings: settings,
+            );
+          case '/searchClass':
+            return new MyCustomRoute(
+              builder: (_) => new SearchClassPage(),
+              settings: settings,
+            );
+          case '/searchSubject':
+            return new MyCustomRoute(
+              builder: (_) => new SearchSubject(),
               settings: settings,
             );
         }

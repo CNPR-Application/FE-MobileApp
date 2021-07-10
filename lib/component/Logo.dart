@@ -7,7 +7,7 @@ class Logo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Container(
-      width: 250.0,
+      width: 150.0,
       height: 250.0,
       alignment: Alignment.center,
       decoration: new BoxDecoration(

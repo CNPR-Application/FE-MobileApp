@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
+import 'package:lcss_mobile_app/Util/oval-right-clipper.dart';
 import 'package:lcss_mobile_app/api/api_service.dart';
+import 'package:lcss_mobile_app/model/booking_model.dart';
+import 'package:lcss_mobile_app/model/class_model.dart';
+import 'package:lcss_mobile_app/model/subject_model.dart';
 import 'package:lcss_mobile_app/model/user_model.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile_v2.dart';
@@ -22,6 +26,21 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
   bool _isLoading = true;
   String username;
+  int branchId;
+
+  Future<ClassResponseModel> classDataFuture;
+  ClassResponseModel classModel;
+  List<ClassModel> listClasses;
+
+  Future<SubjectResponseModel> subjectDataFuture;
+  SubjectResponseModel subjectModel;
+  List<SubjectModel> listSubjects;
+
+  Future<BookingResponseModel> bookingDataFuture;
+  BookingResponseModel bookingModel;
+  List<BookingModel> listBookings;
+
+  UserResponseModel userModel;
 
   @override
   void didChangeDependencies() {
@@ -73,6 +92,13 @@ class _HomeScreenState extends State<HomeScreen> {
     // print(userData);
   }
 
+  saveBranchId(int branchIdInput) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt("branchId", branchIdInput);
+    // APIService apiService = new APIService();
+    // userData = apiService.getUserData(username);
+  }
+
   Future<UserResponseModel> userDataFuture;
 
   Future<UserResponseModel> userData() async {
@@ -83,12 +109,44 @@ class _HomeScreenState extends State<HomeScreen> {
     return userDataFuture;
   }
 
+  Future<ClassResponseModel> classData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    branchId = prefs.getInt("branchId");
+    APIService apiService = new APIService();
+    print(branchId.toString() + "Hello");
+    classDataFuture = apiService.getAllWaitingClass(1, 20, branchId);
+    return classDataFuture;
+  }
+
+  Future<SubjectResponseModel> subjectData() async {
+    APIService apiService = new APIService();
+    subjectDataFuture = apiService.getAllSubjectData(1, 1000);
+    return subjectDataFuture;
+  }
+
+  Future<BookingResponseModel> bookingData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    username = prefs.getString("username");
+    APIService apiService = new APIService();
+    bookingDataFuture = apiService.getAllBookingOfStudent(1, 1000, username);
+    return bookingDataFuture;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<UserResponseModel>(
-      future: userData(),
-      builder: (context, snapshot) {
+    return FutureBuilder(
+      future:
+          Future.wait([userData(), classData(), subjectData(), bookingData()]),
+      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         if (snapshot.hasData) {
+          userModel = snapshot.data[0];
+          classModel = snapshot.data[1];
+          subjectModel = snapshot.data[2];
+          bookingModel = snapshot.data[3];
+          listClasses = classModel.listClasses;
+          listSubjects = subjectModel.listSubject;
+          listBookings = bookingModel.listBooking;
+          saveBranchId(userModel.branchModels.elementAt(0).branchId);
           return WillPopScope(
             onWillPop: _onWillPop,
             child: Scaffold(
@@ -107,6 +165,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               : Home(
                                   userData: userDataFuture,
                                   username: username,
+                                  image: userModel.image,
+                                  email: userModel.email,
+                                  listClassesInput: listClasses,
+                                  listSubjectsInput: listSubjects,
+                                  listBookingsInput: listBookings,
                                 ),
                     ),
               bottomNavigationBar: Container(
@@ -173,15 +236,28 @@ TextStyle priceTextStyle =
     TextStyle(color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold);
 
 class Home extends StatelessWidget {
-  Home({
-    Key key,
-    this.userData,
-    this.username,
-  }) : super(key: key);
+  Home(
+      {Key key,
+      this.userData,
+      this.username,
+      this.image,
+      this.email,
+      this.listClassesInput,
+      this.listSubjectsInput,
+      this.listBookingsInput})
+      : super(key: key);
 
   Future<UserResponseModel> userData;
+  List<ClassModel> listClassesInput;
+  List<SubjectModel> listSubjectsInput;
+  List<BookingModel> listBookingsInput;
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   String username;
+  String image;
+  String email;
+  final Color primary = Colors.white;
+  final Color active = Colors.grey.shade800;
+  final Color divider = Colors.grey.shade600;
 
   @override
   Widget build(BuildContext context) {
@@ -193,17 +269,28 @@ class Home extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
         toolbarHeight: 80,
-        title: Text(
-          "Welcome" + " " + username,
-          style: TextStyle(color: Colors.black),
+        title: Container(
+          height: 60,
+          width: 60,
+          decoration: BoxDecoration(
+            border: Border.all(
+                width: 1, color: Theme.of(context).scaffoldBackgroundColor),
+            shape: BoxShape.circle,
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: ExactAssetImage('assets/images/cnpr_logo.png'),
+            ),
+          ),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          color: Colors.black,
-          onPressed: () {
-            _key.currentState.openDrawer();
-          },
-        ),
+        leading: Builder(builder: (context) {
+          return IconButton(
+            icon: Icon(Icons.menu),
+            color: Colors.black,
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          );
+        }),
         actions: [
           IconButton(
               onPressed: () {},
@@ -213,15 +300,26 @@ class Home extends StatelessWidget {
               )),
         ],
       ),
-      // drawer: _buildDrawer(),
+      drawer: _buildDrawer(image, context),
       backgroundColor: Colors.grey.shade200,
       body: ListView(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
-            child: Text(
-              "Khóa học bạn có thể thích",
-              style: Theme.of(context).textTheme.title,
+            child: Row(
+              children: [
+                Text(
+                  "Môn học bạn có thể thích",
+                  style: Theme.of(context).textTheme.title,
+                ),
+                Spacer(),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, "/searchSubject");
+                  },
+                  child: Text("Xem tất cả"),
+                ),
+              ],
             ),
           ),
           Container(
@@ -230,17 +328,44 @@ class Home extends StatelessWidget {
             margin: EdgeInsets.only(top: 15),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 8,
+              itemCount: listClassesInput.length == 0
+                  ? 0
+                  : listClassesInput.length == 1
+                      ? 1
+                      : listClassesInput.length == 2
+                          ? 2
+                          : listClassesInput.length == 3
+                              ? 3
+                              : listClassesInput.length == 4
+                                  ? 4
+                                  : listClassesInput.length == 5
+                                      ? 5
+                                      : listClassesInput.length == 6
+                                          ? 6
+                                          : listClassesInput.length == 7
+                                              ? 7
+                                              : 8,
               itemBuilder: (BuildContext context, int index) {
-                return _categoryList(context);
+                return _categoryList(context, index);
               },
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
-            child: Text(
-              "Lớp học hiện có",
-              style: Theme.of(context).textTheme.title,
+            child: Row(
+              children: [
+                Text(
+                  "Lớp học sắp khai giảng",
+                  style: Theme.of(context).textTheme.title,
+                ),
+                Spacer(),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, "/searchClass");
+                  },
+                  child: Text("Xem tất cả"),
+                ),
+              ],
             ),
           ),
           SizedBox(height: 10),
@@ -250,9 +375,19 @@ class Home extends StatelessWidget {
             margin: EdgeInsets.only(top: 15),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 5,
+              itemCount: listClassesInput.length == 0
+                  ? 0
+                  : listClassesInput.length == 1
+                      ? 1
+                      : listClassesInput.length == 2
+                          ? 2
+                          : listClassesInput.length == 3
+                              ? 3
+                              : listClassesInput.length == 4
+                                  ? 4
+                                  : 5,
               itemBuilder: (BuildContext context, int index) {
-                return _featuredProduct(context);
+                return _featuredProduct(context, index);
               },
             ),
           ),
@@ -273,101 +408,163 @@ class Home extends StatelessWidget {
                     onTap: () {
                       print("hello");
                     },
-                    child: Text("View all"),
+                    child: Text("Xem tất cả"),
                   ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 4.0),
-          ...[1, 2, 3, 4, 5].map(
-            (product) => ProductListItem(
+          ...listBookingsInput.map((item) {
+            return ProductListItem(
               onPressed: () {},
-            ),
-          ),
+              subjectName: item.subjectName,
+              subjectPrice: item.payingPrice,
+              image: item.image,
+            );
+          }),
           const SizedBox(height: 10.0),
         ],
       ),
     );
   }
 
-  // _buildDrawer() {
-  //   final String image = images[0];
-  //   return ClipPath(
-  //     clipper: OvalRightBorderClipper(),
-  //     child: Drawer(
-  //       child: Container(
-  //         padding: const EdgeInsets.only(left: 16.0, right: 40),
-  //         decoration: BoxDecoration(
-  //             color: primary, boxShadow: [BoxShadow(color: Colors.black45)]),
-  //         width: 300,
-  //         child: SafeArea(
-  //           child: SingleChildScrollView(
-  //             child: Column(
-  //               children: <Widget>[
-  //                 Container(
-  //                   alignment: Alignment.centerRight,
-  //                   child: IconButton(
-  //                     icon: Icon(
-  //                       Icons.power_settings_new,
-  //                       color: active,
-  //                     ),
-  //                     onPressed: () {},
-  //                   ),
-  //                 ),
-  //                 Container(
-  //                   height: 90,
-  //                   alignment: Alignment.center,
-  //                   decoration: BoxDecoration(
-  //                       shape: BoxShape.circle,
-  //                       gradient: LinearGradient(
-  //                           colors: [Colors.orange, Colors.deepOrange])),
-  //                   child: CircleAvatar(
-  //                     radius: 40,
-  //                     backgroundImage: NetworkImage(image),
-  //                   ),
-  //                 ),
-  //                 SizedBox(height: 5.0),
-  //                 Text(
-  //                   "erika costell",
-  //                   style: TextStyle(
-  //                       color: Colors.black,
-  //                       fontSize: 18.0,
-  //                       fontWeight: FontWeight.w600),
-  //                 ),
-  //                 Text(
-  //                   "@erika07",
-  //                   style: TextStyle(color: active, fontSize: 16.0),
-  //                 ),
-  //                 SizedBox(height: 30.0),
-  //                 _buildRow(Icons.home, "Home"),
-  //                 _buildDivider(),
-  //                 _buildRow(Icons.person_pin, "My profile"),
-  //                 _buildDivider(),
-  //                 _buildRow(Icons.message, "Messages", showBadge: true),
-  //                 _buildDivider(),
-  //                 _buildRow(Icons.notifications, "Notifications",
-  //                     showBadge: true),
-  //                 _buildDivider(),
-  //                 _buildRow(Icons.settings, "Settings"),
-  //                 _buildDivider(),
-  //                 _buildRow(Icons.email, "Contact us"),
-  //                 _buildDivider(),
-  //                 _buildRow(Icons.info_outline, "Help"),
-  //                 _buildDivider(),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  _buildDrawer(String image, BuildContext context) {
+    return ClipPath(
+      clipper: OvalRightBorderClipper(),
+      child: Drawer(
+        child: Container(
+          padding: const EdgeInsets.only(left: 16.0, right: 40),
+          decoration: BoxDecoration(
+              color: primary, boxShadow: [BoxShadow(color: Colors.black45)]),
+          width: 300,
+          child: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.power_settings_new,
+                        color: active,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                  Container(
+                    height: 90,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                            colors: [AppColor.greenTheme, Colors.green])),
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(image),
+                    ),
+                  ),
+                  SizedBox(height: 5.0),
+                  Text(
+                    username,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    email,
+                    style: TextStyle(color: active, fontSize: 16.0),
+                  ),
+                  SizedBox(height: 30.0),
+                  _buildRow(context, Icons.home, "Trang chủ"),
+                  _buildDivider(),
+                  _buildRow(context, Icons.person_pin, "Thông tin bản thân"),
+                  _buildDivider(),
+                  _buildRow(context, Icons.message, "Lớp học sắp khai giảng",
+                      showBadge: true),
+                  _buildDivider(),
+                  _buildRow(context, Icons.notifications, "Thông báo",
+                      showBadge: true),
+                  _buildDivider(),
+                  _buildRow(context, Icons.settings, "Hệ thống"),
+                  _buildDivider(),
+                  _buildRow(context, Icons.email, "Liên lạc chúng tôi"),
+                  _buildDivider(),
+                  _buildRow(context, Icons.info_outline, "Cần giúp đỡ"),
+                  _buildDivider(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Divider _buildDivider() {
+    return Divider(
+      color: divider,
+    );
+  }
+
+  Widget _buildRow(BuildContext context, IconData icon, String title,
+      {bool showBadge = false}) {
+    final TextStyle tStyle = TextStyle(color: active, fontSize: 16.0);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: InkWell(
+        onTap: () {
+          print('hello');
+          if (title == 'Lớp học sắp khai giảng') {
+            Navigator.pushNamed(context, "/searchClass");
+          }
+        },
+        child: Row(children: [
+          Icon(
+            icon,
+            color: active,
+          ),
+          SizedBox(width: 10.0),
+          Text(
+            title,
+            style: tStyle,
+          ),
+          Spacer(),
+          if (showBadge)
+            Material(
+              color: Colors.green,
+              elevation: 5.0,
+              shadowColor: Colors.red,
+              borderRadius: BorderRadius.circular(5.0),
+              child: Container(
+                width: 25,
+                height: 25,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: Text(
+                  "10+",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            )
+        ]),
+      ),
+    );
+  }
 
   // Chỗ này sẽ update data truyền vào (lấy từ API)
-  Widget _featuredProduct(BuildContext context) {
+  Widget _featuredProduct(BuildContext context, int index) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.pushNamed(context, "/searchClass");
+      },
       child: Stack(
         children: <Widget>[
           Container(
@@ -376,7 +573,8 @@ class Home extends StatelessWidget {
               color: Colors.grey,
               image: DecorationImage(
                 image: NetworkImage(
-                    'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F1.jpg?alt=media'),
+                    // 'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F1.jpg?alt=media'
+                    'https://blog.coursify.me/wp-content/uploads/2016/04/online-classes-coursifyme.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -396,7 +594,7 @@ class Home extends StatelessWidget {
               ),
               color: Colors.black87,
               child: Text(
-                "Sofa Set",
+                listClassesInput[index].className,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
@@ -413,7 +611,7 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget _categoryList(BuildContext context) {
+  Widget _categoryList(BuildContext context, int index) {
     return InkWell(
       onTap: () {},
       child: Column(
@@ -423,8 +621,7 @@ class Home extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.black12,
                 image: DecorationImage(
-                    image: NetworkImage(
-                        'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F3.jpg?alt=media'),
+                    image: NetworkImage(listSubjectsInput[index].image),
                     fit: BoxFit.cover)),
             alignment: Alignment.center,
             margin: EdgeInsets.symmetric(horizontal: 10),
@@ -434,7 +631,10 @@ class Home extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Text("Tables")
+          Text(
+            listSubjectsInput[index].subjectName,
+            maxLines: 2,
+          )
         ],
       ),
     );
@@ -444,7 +644,17 @@ class Home extends StatelessWidget {
 // Ở đây trong tương lai cũng sẽ truyền data vào (Data từ API)
 class ProductListItem extends StatelessWidget {
   final Function onPressed;
-  const ProductListItem({Key key, this.onPressed}) : super(key: key);
+  const ProductListItem(
+      {Key key,
+      this.onPressed,
+      this.subjectName,
+      this.subjectPrice,
+      this.image})
+      : super(key: key);
+
+  final String subjectName;
+  final double subjectPrice;
+  final String image;
 
   @override
   Widget build(BuildContext context) {
@@ -467,8 +677,7 @@ class ProductListItem extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.black,
                 image: DecorationImage(
-                  image: NetworkImage(
-                      'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F2.jpg?alt=media'),
+                  image: NetworkImage(image),
                   fit: BoxFit.cover,
                   alignment: Alignment.center,
                 ),
@@ -485,23 +694,24 @@ class ProductListItem extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Text("Nhật Ngữ N2"),
+                            Text(subjectName),
                             SizedBox(
                               height: 5,
                             ),
-                            Text("1200000\$", style: priceTextStyle)
+                            Text(subjectPrice.toInt().toString() + "₫",
+                                style: priceTextStyle)
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_right_alt_rounded,
-                          size: 22,
-                        ),
-                        onPressed: () {
-                          print('tapped');
-                        },
-                      )
+                      // IconButton(
+                      //   icon: Icon(
+                      //     Icons.arrow_right_alt_rounded,
+                      //     size: 22,
+                      //   ),
+                      //   onPressed: () {
+                      //     print('tapped');
+                      //   },
+                      // )
                     ],
                   )),
             )

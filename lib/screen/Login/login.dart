@@ -107,7 +107,14 @@ class _LoginScreenState extends State<LoginScreen>
                     new Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        new Logo(),
+                        new Logo(
+                          image: DecorationImage(
+                            image: new ExactAssetImage(
+                              'assets/images/cnpr_logo2.png',
+                            ),
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),
                         new LoginFormContainer(
                             initUsername: username,
                             initPassword: password,
