@@ -154,7 +154,7 @@ class _SearchClassPageState extends State<SearchClassPage> {
             )),
           );
         } else
-          return Intro5();
+          return Intro5(AppColor.greenTheme);
       },
     );
   }
@@ -361,7 +361,7 @@ class _SearchClassPageState extends State<SearchClassPage> {
                             fontSize: 25.0,
                           )),
                   SizedBox(
-                    height: 20.0,
+                    height: 6.0,
                   ),
                   Text(item.shiftDescription,
                       style: TextStyle(

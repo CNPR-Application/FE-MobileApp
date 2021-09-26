@@ -1,15 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:lcss_mobile_app/model/attendance_model.dart';
 import 'package:lcss_mobile_app/model/booking_model.dart';
 import 'package:lcss_mobile_app/model/class_model.dart';
+import 'package:lcss_mobile_app/model/feedback_class_model..dart';
+import 'package:lcss_mobile_app/model/feedback_data_model.dart';
 import 'package:lcss_mobile_app/model/login_model.dart';
+import 'package:lcss_mobile_app/model/myclass_model.dart';
 import 'package:lcss_mobile_app/model/shift_model.dart';
+import 'package:lcss_mobile_app/model/subject_detail_model.dart';
 import 'package:lcss_mobile_app/model/subject_model.dart';
 import 'package:lcss_mobile_app/model/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIService {
-  var urlBase = "https://lcssapp.herokuapp.com/";
+  var urlBase = "https://lcss-fa21.herokuapp.com/";
 
   Future<LoginResponseModel> login(LoginRequestModel loginRequestModel) async {
     var url = Uri.parse(urlBase + "login");
@@ -125,7 +130,7 @@ class APIService {
   Future<SubjectResponseModel> getAllSubjectData(
       int pageNo, int pageSize) async {
     var url = Uri.parse(urlBase +
-        "subjects?name=&isAvailable=1&pageNo=" +
+        "subjects?name=&isAvailable=True&pageNo=" +
         pageNo.toString().trim() +
         "&pageSize=" +
         pageSize.toString().trim());
@@ -152,9 +157,10 @@ class APIService {
       int pageNo, int pageSize, int branchId) async {
     print(branchId.toString());
     var url = Uri.parse(urlBase +
-        "classes?branchId=" +
+        "classes/" +
         branchId.toString().trim() +
-        "&subjectId=&shiftId=&status=waiting&pageNo=" +
+        "/filter?" +
+        "&subjectId=0&shiftId=0&status=waiting&pageNo=" +
         pageNo.toString().trim() +
         "&pageSize=" +
         pageSize.toString().trim());
@@ -202,6 +208,145 @@ class APIService {
       return BookingResponseModel.fromJson(jsonDecode(decodeData));
     } else {
       return null;
+    }
+  }
+
+  Future<SubjectDetailResponseModel> getSubjectDetail(
+      int pageNo, int pageSize, int subjectId) async {
+    var url = Uri.parse(urlBase +
+        "subjects/details?subjectId=" +
+        subjectId.toString() +
+        "&isAvailable=true&pageNo=" +
+        pageNo.toString().trim() +
+        "&pageSize=" +
+        pageSize.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return SubjectDetailResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<MyClassResponseModel> getClassByStatus(
+      int pageNo, int pageSize, String username, String status) async {
+    var url = Uri.parse(urlBase +
+        "student-class/" +
+        username +
+        "?status=" +
+        status +
+        "&pageNo=" +
+        pageNo.toString().trim() +
+        "&pageSize=" +
+        pageSize.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return MyClassResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<AttendanceResponseModel> getAttendanceStudentByClass(
+      int pageNo, int pageSize, String username, int classId) async {
+    var url = Uri.parse(urlBase +
+        "attendance/" +
+        username +
+        "/?classId=" +
+        classId.toString() +
+        "&pageNo=" +
+        pageNo.toString().trim() +
+        "&pageSize=" +
+        pageSize.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return AttendanceResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<FeedbackClassResponseModel> getFeedBackClassByUsername(
+      String username) async {
+    var url = Uri.parse(urlBase + "student-feedback-class/" + username);
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return FeedbackClassResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<http.Response> sendFeedbackData(FeedbackDataModel feedbackData) async {
+    var url = Uri.parse(urlBase + "feedback");
+
+    var response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+      body: jsonEncode(<String, dynamic>{
+        'studentInClassId': feedbackData.studentInClassId,
+        'subjectId': feedbackData.subjectId,
+        'teacherId': feedbackData.teacherId,
+        'teacherRating': feedbackData.subjectRating,
+        'subjectRating': feedbackData.subjectRating,
+        'feedback': feedbackData.feedback,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return response;
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to send feedback data.');
     }
   }
 }

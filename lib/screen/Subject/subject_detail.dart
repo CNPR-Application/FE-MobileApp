@@ -6,12 +6,15 @@
 import 'package:flutter/material.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
 import 'package:lcss_mobile_app/model/subject_model.dart';
+import 'package:lcss_mobile_app/screen/Subject/subject_detail_outcome.dart';
 
 class SubjectDetailsPage extends StatelessWidget {
-  SubjectDetailsPage({Key key, this.subjectData}) : super(key: key);
+  SubjectDetailsPage({Key key, this.subjectData, this.subjectId})
+      : super(key: key);
   Function callback;
 
-  SubjectModel subjectData;
+  final SubjectModel subjectData;
+  final int subjectId;
 
   @override
   Widget build(BuildContext context) {
@@ -143,20 +146,29 @@ class SubjectDetailsPage extends StatelessWidget {
                       const SizedBox(height: 30.0),
                       SizedBox(
                         width: double.infinity,
-                        child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0)),
-                          color: AppColor.greenTheme,
-                          textColor: Colors.white,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0)),
+                            primary: AppColor.greenTheme,
+                            onPrimary: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16.0,
+                              horizontal: 32.0,
+                            ),
+                          ),
                           child: Text(
-                            "Liên lạc với trung tâm",
+                            "Quy trình và thành quả",
                             style: TextStyle(fontWeight: FontWeight.normal),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 32.0,
-                          ),
-                          onPressed: () {},
+                          onPressed: () {
+                            print("hello");
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => SubjectDetailOutcomePage(
+                                        subjectId, subjectData)));
+                          },
                         ),
                       ),
                       const SizedBox(height: 30.0),
@@ -173,18 +185,6 @@ class SubjectDetailsPage extends StatelessWidget {
                             fontWeight: FontWeight.w300, fontSize: 14.0),
                       ),
                       const SizedBox(height: 20.0),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
-                          subjectData.slot.toString() + " SLOT",
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w300,
-                            fontSize: 25.0,
-                            color: Colors.red,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -195,7 +195,6 @@ class SubjectDetailsPage extends StatelessWidget {
             top: 0,
             left: 0,
             right: 0,
-            bottom: 0,
             child: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,

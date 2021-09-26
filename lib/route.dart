@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lcss_mobile_app/Screen/Home/home.dart';
 import 'package:lcss_mobile_app/Screen/Login/login.dart';
+import 'package:lcss_mobile_app/screen/Attendance/attendance_student.dart';
+import 'package:lcss_mobile_app/screen/BookingHistory/booking_history.dart';
+import 'package:lcss_mobile_app/screen/Class/my_class.dart';
 import 'package:lcss_mobile_app/screen/Class/search_class.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
+import 'package:lcss_mobile_app/screen/Feedback/feedback_list.dart';
 import 'package:lcss_mobile_app/screen/Subject/search_subject.dart';
 
 class Routes {
@@ -37,6 +41,26 @@ class Routes {
           case '/searchSubject':
             return new MyCustomRoute(
               builder: (_) => new SearchSubject(),
+              settings: settings,
+            );
+          case '/bookingHistory':
+            return new MyCustomRoute(
+              builder: (_) => new BookingHistoryPage(),
+              settings: settings,
+            );
+          case '/myClass':
+            return new MyCustomRoute(
+              builder: (_) => new MyClassPage(),
+              settings: settings,
+            );
+          case '/studentAttendance':
+            return new MyCustomRoute(
+              builder: (_) => new StudentClassAttendancePage(),
+              settings: settings,
+            );
+          case '/checkFeedback':
+            return new MyCustomRoute(
+              builder: (_) => new FeedbackListPage(),
               settings: settings,
             );
         }

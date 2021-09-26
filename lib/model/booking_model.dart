@@ -12,7 +12,7 @@ class BookingResponseModel {
   });
 
   factory BookingResponseModel.fromJson(Map<String, dynamic> json) {
-    var list = json['bookingSearchResponseDtoList'] as List;
+    var list = json['classList'] as List;
     print(list.runtimeType);
     List<BookingModel> bookDtos =
         list.map((i) => BookingModel.fromJson(i)).toList();
@@ -40,7 +40,7 @@ class BookingModel {
   int branchId;
   String branchName;
   double payingPrice;
-  String desription;
+  String description;
 
   BookingModel({
     this.bookingId,
@@ -56,7 +56,7 @@ class BookingModel {
     this.branchId,
     this.branchName,
     this.payingPrice,
-    this.desription,
+    this.description,
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
@@ -75,7 +75,7 @@ class BookingModel {
       branchId: json['branchId'] != null ? json['branchId'] : 0,
       branchName: json['branchName'] != null ? json['branchName'] : "",
       payingPrice: json['payingPrice'] != null ? json['payingPrice'] : 0.0,
-      desription: json['desription'] != null ? json['desription'] : "",
+      description: json['description'] != null ? json['description'] : "",
     );
   }
 }

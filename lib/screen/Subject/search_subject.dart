@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
 import 'package:lcss_mobile_app/api/api_service.dart';
+import 'package:lcss_mobile_app/model/subject_detail_model.dart';
 import 'package:lcss_mobile_app/model/subject_model.dart';
 import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
 import 'package:lcss_mobile_app/screen/Subject/subject_detail.dart';
@@ -33,7 +34,6 @@ class _SearchSubjectState extends State<SearchSubject> {
   Future<SubjectResponseModel> subjectDataFuture;
   SubjectResponseModel subjectModel;
   List<SubjectModel> listSubjects;
-
   List<SubjectModel> listSearchSubject;
 
   @override
@@ -237,7 +237,7 @@ class _SearchSubjectState extends State<SearchSubject> {
             ),
           );
         } else
-          return Intro5();
+          return Intro5(AppColor.greenTheme);
       },
     );
   }
@@ -251,6 +251,9 @@ class _SearchSubjectState extends State<SearchSubject> {
             builder: (context) => new SubjectDetailsPage(
               subjectData:
                   _isSearch ? listSearchSubject[index] : listSubjects[index],
+              subjectId: _isSearch
+                  ? listSearchSubject[index].subjectId
+                  : listSubjects[index].subjectId,
             ),
           ),
         );

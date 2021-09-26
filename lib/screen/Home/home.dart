@@ -224,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         } else
-          return Intro5();
+          return Intro5(AppColor.greenTheme);
       },
     );
   }
@@ -310,7 +310,7 @@ class Home extends StatelessWidget {
               children: [
                 Text(
                   "Môn học bạn có thể thích",
-                  style: Theme.of(context).textTheme.title,
+                  style: Theme.of(context).textTheme.headline6,
                 ),
                 Spacer(),
                 InkWell(
@@ -328,23 +328,8 @@ class Home extends StatelessWidget {
             margin: EdgeInsets.only(top: 15),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: listClassesInput.length == 0
-                  ? 0
-                  : listClassesInput.length == 1
-                      ? 1
-                      : listClassesInput.length == 2
-                          ? 2
-                          : listClassesInput.length == 3
-                              ? 3
-                              : listClassesInput.length == 4
-                                  ? 4
-                                  : listClassesInput.length == 5
-                                      ? 5
-                                      : listClassesInput.length == 6
-                                          ? 6
-                                          : listClassesInput.length == 7
-                                              ? 7
-                                              : 8,
+              itemCount:
+                  listSubjectsInput.length < 8 ? listSubjectsInput.length : 8,
               itemBuilder: (BuildContext context, int index) {
                 return _categoryList(context, index);
               },
@@ -356,7 +341,7 @@ class Home extends StatelessWidget {
               children: [
                 Text(
                   "Lớp học sắp khai giảng",
-                  style: Theme.of(context).textTheme.title,
+                  style: Theme.of(context).textTheme.headline6,
                 ),
                 Spacer(),
                 InkWell(
@@ -401,11 +386,12 @@ class Home extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     "Lịch sử đăng ký",
-                    style: Theme.of(context).textTheme.title,
+                    style: Theme.of(context).textTheme.headline6,
                   ),
                   Spacer(),
                   InkWell(
                     onTap: () {
+                      Navigator.pushNamed(context, "/bookingHistory");
                       print("hello");
                     },
                     child: Text("Xem tất cả"),
@@ -479,7 +465,7 @@ class Home extends StatelessWidget {
                   SizedBox(height: 30.0),
                   _buildRow(context, Icons.home, "Trang chủ"),
                   _buildDivider(),
-                  _buildRow(context, Icons.person_pin, "Thông tin bản thân"),
+                  _buildRow(context, Icons.person_pin, "Lớp học"),
                   _buildDivider(),
                   _buildRow(context, Icons.message, "Lớp học sắp khai giảng",
                       showBadge: true),
@@ -489,7 +475,7 @@ class Home extends StatelessWidget {
                   _buildDivider(),
                   _buildRow(context, Icons.settings, "Hệ thống"),
                   _buildDivider(),
-                  _buildRow(context, Icons.email, "Liên lạc chúng tôi"),
+                  _buildRow(context, Icons.email, "Đánh giá lớp học"),
                   _buildDivider(),
                   _buildRow(context, Icons.info_outline, "Cần giúp đỡ"),
                   _buildDivider(),
@@ -518,6 +504,12 @@ class Home extends StatelessWidget {
           print('hello');
           if (title == 'Lớp học sắp khai giảng') {
             Navigator.pushNamed(context, "/searchClass");
+          }
+          if (title == 'Lớp học') {
+            Navigator.pushNamed(context, "/myClass");
+          }
+          if (title == 'Đánh giá lớp học') {
+            Navigator.pushNamed(context, "/checkFeedback");
           }
         },
         child: Row(children: [
@@ -1273,13 +1265,13 @@ class ProfileHeader extends StatelessWidget {
               ),
               Text(
                 title,
-                style: Theme.of(context).textTheme.title,
+                style: Theme.of(context).textTheme.headline6,
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 5.0),
                 Text(
                   subtitle,
-                  style: Theme.of(context).textTheme.subtitle,
+                  style: Theme.of(context).textTheme.subtitle1,
                 ),
               ]
             ],

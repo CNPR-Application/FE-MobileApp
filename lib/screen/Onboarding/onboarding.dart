@@ -7,7 +7,10 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
 
 class Intro5 extends StatefulWidget {
-  static final String path = "lib/src/pages/onboarding/intro5.dart";
+  Intro5(this.color);
+
+  final Color color;
+
   @override
   _Intro5State createState() => _Intro5State();
 }
@@ -19,7 +22,7 @@ class _Intro5State extends State<Intro5> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.greenTheme,
+      backgroundColor: widget.color,
       body: Column(
         children: [
           Flexible(
