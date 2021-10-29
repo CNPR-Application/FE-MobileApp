@@ -1,17 +1,31 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:lcss_mobile_app/Screen/Home/home.dart';
-import 'package:lcss_mobile_app/Screen/Login/login.dart';
+import 'package:lcss_mobile_app/screen/Login/login.dart';
 import 'package:lcss_mobile_app/screen/Attendance/attendance_student.dart';
 import 'package:lcss_mobile_app/screen/BookingHistory/booking_history.dart';
 import 'package:lcss_mobile_app/screen/Class/my_class.dart';
 import 'package:lcss_mobile_app/screen/Class/search_class.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
 import 'package:lcss_mobile_app/screen/Feedback/feedback_list.dart';
+import 'package:lcss_mobile_app/screen/Home/home.dart';
 import 'package:lcss_mobile_app/screen/Subject/search_subject.dart';
+import 'package:lcss_mobile_app/screen/reply/app.dart' as reply;
 
 class Routes {
   Routes() {
-    runApp(new MaterialApp(
+    runApp(MyApp());
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
       title: "LCSS Mobile App",
       debugShowCheckedModeBanner: false,
       home: new LoginScreen(),
@@ -63,9 +77,15 @@ class Routes {
               builder: (_) => new FeedbackListPage(),
               settings: settings,
             );
+          case '/reply':
+            return new MyCustomRoute(
+              builder: (_) => new StudyWrapper(
+                  study: reply.ReplyApp(), hasBottomNavBar: false),
+              settings: settings,
+            );
         }
       },
-    ));
+    );
   }
 }
 
@@ -82,4 +102,23 @@ class MyCustomRoute<T> extends MaterialPageRoute<T> {
       child: child,
     );
   }
+}
+
+// Crude counter to make messages unique
+int _messageCount = 0;
+
+/// The API endpoint here accepts a raw FCM payload for demonstration purposes.
+String constructFCMPayload(String token) {
+  _messageCount++;
+  return jsonEncode({
+    'token': token,
+    'data': {
+      'via': 'FlutterFire Cloud Messaging!!!',
+      'count': _messageCount.toString(),
+    },
+    'notification': {
+      'title': 'Hello FlutterFire!',
+      'body': 'This notification (#$_messageCount) was created via FCM!',
+    },
+  });
 }

@@ -237,7 +237,7 @@ class _SearchSubjectState extends State<SearchSubject> {
             ),
           );
         } else
-          return Intro5(AppColor.greenTheme);
+          return Intro5(Colors.white);
       },
     );
   }

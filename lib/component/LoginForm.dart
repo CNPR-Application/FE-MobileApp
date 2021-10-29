@@ -46,14 +46,14 @@ class LoginFormContainer extends StatelessWidget {
                 new InputFieldArea(
                   focusNode: _focusNodeUsername,
                   controller: _controllerUsername,
-                  hint: "Username",
+                  hint: "Tài khoản",
                   obscure: false,
                   icon: Icons.person_outline,
                 ),
                 new InputFieldArea(
                   focusNode: _focusNodePassword,
                   controller: _controllerPassword,
-                  hint: "Password",
+                  hint: "Mật khẩu",
                   obscure: true,
                   icon: Icons.lock_outline,
                 ),

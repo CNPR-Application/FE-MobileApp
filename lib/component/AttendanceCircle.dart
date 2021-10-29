@@ -10,7 +10,7 @@ class AttendanceCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime dt = DateTime.parse(attendanceData.checkingDate);
+    DateTime dt = DateTime.parse(attendanceData.startTime);
     DateFormat formatter = new DateFormat('dd-MM-yyyy');
     return Container(
       child: Row(
@@ -111,7 +111,7 @@ class AttendanceIconAbsent extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: attendanceData.status == "absence"
+          colors: attendanceData.status == "absent"
               ? [Color(0xffe9507d), Color(0xfffb6799)]
               : [AppColor.grayDisable, AppColor.grayDisable],
           // colors: [Color(0xffe9507d), Color(0xfffb6799)],

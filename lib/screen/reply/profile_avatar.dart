@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+
+class ProfileAvatar extends StatelessWidget {
+  const ProfileAvatar({
+    Key key,
+    @required this.avatar,
+    this.radius = 20,
+  })  : assert(avatar != null),
+        super(key: key);
+
+  final String avatar;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: CircleAvatar(
+        radius: radius,
+        backgroundColor: Theme.of(context).cardColor,
+        child: ClipOval(
+          child: Image.asset(
+            avatar,
+            gaplessPlayback: true,
+            height: 42,
+            width: 42,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+}

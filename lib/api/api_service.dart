@@ -7,6 +7,8 @@ import 'package:lcss_mobile_app/model/feedback_class_model..dart';
 import 'package:lcss_mobile_app/model/feedback_data_model.dart';
 import 'package:lcss_mobile_app/model/login_model.dart';
 import 'package:lcss_mobile_app/model/myclass_model.dart';
+import 'package:lcss_mobile_app/model/notification_model.dart';
+import 'package:lcss_mobile_app/model/schedule_model.dart';
 import 'package:lcss_mobile_app/model/shift_model.dart';
 import 'package:lcss_mobile_app/model/subject_detail_model.dart';
 import 'package:lcss_mobile_app/model/subject_model.dart';
@@ -32,6 +34,7 @@ class APIService {
     if (response.statusCode == 200) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString("username", jsonDecode(msg)['username']);
+      // prefs.setInt("branchId", jsonDecode(msg)['branchId']);
       return LoginResponseModel.fromJson(await json.decode(response.body));
     } else {
       return null;
@@ -347,6 +350,60 @@ class APIService {
       // If the server did not return a 200 OK response,
       // then throw an exception.
       throw Exception('Failed to send feedback data.');
+    }
+  }
+
+  Future<NotificationResponseModel> getAllNotificationOfStudent(
+      int pageNo, int pageSize, String username) async {
+    var url = Uri.parse(urlBase +
+        "notification/" +
+        username +
+        "?pageNo=" +
+        pageNo.toString().trim() +
+        "&pageSize=" +
+        pageSize.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return NotificationResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<ScheduleResponseModel> getScheduleData(
+      String username, String searchDate) async {
+    var url = Uri.parse(urlBase +
+        "schedules?studentUsername=" +
+        username +
+        "&srchDate=" +
+        searchDate.toString().trim());
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print(response.body);
+
+    final decodeData = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return ScheduleResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
     }
   }
 }

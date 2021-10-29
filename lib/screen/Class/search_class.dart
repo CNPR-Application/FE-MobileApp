@@ -154,7 +154,7 @@ class _SearchClassPageState extends State<SearchClassPage> {
             )),
           );
         } else
-          return Intro5(AppColor.greenTheme);
+          return Intro5(Colors.white);
       },
     );
   }

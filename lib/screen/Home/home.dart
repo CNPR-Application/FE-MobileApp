@@ -1,19 +1,27 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:lcss_mobile_app/Util/constant.dart';
+import 'package:lcss_mobile_app/Util/data/gallery_options.dart';
 import 'package:lcss_mobile_app/Util/oval-right-clipper.dart';
 import 'package:lcss_mobile_app/api/api_service.dart';
+import 'package:lcss_mobile_app/main.dart';
 import 'package:lcss_mobile_app/model/booking_model.dart';
 import 'package:lcss_mobile_app/model/class_model.dart';
+import 'package:lcss_mobile_app/model/notification_model.dart';
+import 'package:lcss_mobile_app/model/schedule_model.dart';
 import 'package:lcss_mobile_app/model/subject_model.dart';
 import 'package:lcss_mobile_app/model/user_model.dart';
-import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile_v2.dart';
 import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:lcss_mobile_app/screen/reply/app.dart' as reply;
+import 'package:lcss_mobile_app/screen/reply/routes.dart' as reply_routes;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -40,7 +48,16 @@ class _HomeScreenState extends State<HomeScreen> {
   BookingResponseModel bookingModel;
   List<BookingModel> listBookings;
 
+  Future<NotificationResponseModel> notificationDataFuture;
+  NotificationResponseModel notificationModel;
+  List<NotificationModel> listNotifications;
+
+  Future<ScheduleResponseModel> scheduleDataFuture;
+  ScheduleResponseModel scheduleModel;
+
   UserResponseModel userModel;
+
+  bool notTurnBack;
 
   @override
   void didChangeDependencies() {
@@ -48,15 +65,151 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       callLoad();
       _isLoading = false;
+      _listUserFuture = userData();
+      _listClassFuture = classData();
+      _listSubjectFuture = subjectData();
+      _listBookingFuture = bookingData();
+      _listNotificationFuture = notificationData();
+      _listScheduleFuture = scheduleData();
     });
   }
 
   @override
   void initState() {
     super.initState();
+    pushFCMToken();
+    notTurnBack = true;
+    _firebaseConfig();
+
     setState(() {
       callLoad();
       _isLoading = false;
+    });
+    _listUserFuture = userData();
+    _listClassFuture = classData();
+    _listSubjectFuture = subjectData();
+    _listBookingFuture = bookingData();
+    _listNotificationFuture = notificationData();
+    _listScheduleFuture = scheduleData();
+  }
+
+  void pushFCMToken() async {
+    String token = await messaging.getToken();
+    print('The token is: ' + token);
+  }
+
+  void _firebaseConfig() {
+    var androiInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    var iosInit = IOSInitializationSettings();
+    var initSetting = InitializationSettings(android: androiInit, iOS: iosInit);
+
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    flutterLocalNotificationsPlugin.initialize(initSetting);
+
+    var androidDetails =
+        AndroidNotificationDetails('1', 'channelName', 'channelDescription');
+
+    var iosDetails = IOSNotificationDetails();
+
+    var generalNotificationDetails =
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
+
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) {
+      if (message != null) {
+        RemoteNotification notification = message.notification;
+        AndroidNotification android = message.notification?.android;
+
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channel.description,
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
+                  icon: 'launch_background',
+                ),
+              ));
+        }
+        if (!notTurnBack) {
+          Navigator.pushNamed(
+            context,
+            '/login',
+          );
+          notTurnBack = true;
+        }
+        print("Hello");
+      }
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        RemoteNotification notification = message.notification;
+        AndroidNotification android = message.notification?.android;
+
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channel.description,
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
+                  icon: 'launch_background',
+                ),
+              ));
+        }
+        print("Oh yeah we got it");
+      });
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        RemoteNotification notification = message.notification;
+        AndroidNotification android = message.notification?.android;
+
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+              notification.hashCode,
+              notification.title,
+              notification.body,
+              NotificationDetails(
+                android: AndroidNotificationDetails(
+                  channel.id,
+                  channel.name,
+                  channel.description,
+                  // TODO add a proper drawable resource to android, for now using
+                  //      one that already exists in example app.
+                  icon: 'launch_background',
+                ),
+              ));
+        }
+        notTurnBack = false;
+        print('A new onMessageOpenedApp event was published!');
+        // Navigator.pushNamed(
+        //   context,
+        //   '/home',
+        // );
+        print("Hello Adakama");
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new StudyWrapper(
+              study: reply.ReplyApp(
+                listNotification: listNotifications,
+              ),
+              hasBottomNavBar: false,
+              listNotification: listNotifications,
+            ),
+          ),
+        );
+      });
     });
   }
 
@@ -132,20 +285,67 @@ class _HomeScreenState extends State<HomeScreen> {
     return bookingDataFuture;
   }
 
+  Future<NotificationResponseModel> notificationData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    username = prefs.getString("username");
+    APIService apiService = new APIService();
+    notificationDataFuture =
+        apiService.getAllNotificationOfStudent(1, 1000, username);
+    return notificationDataFuture;
+  }
+
+  Future<ScheduleResponseModel> scheduleData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    username = prefs.getString("username");
+    APIService apiService = new APIService();
+    String formattedDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
+    print("The Time right now is: " + formattedDate);
+    scheduleDataFuture = apiService.getScheduleData(username, formattedDate);
+    return scheduleDataFuture;
+  }
+
+  Future<UserResponseModel> _listUserFuture;
+  Future<ClassResponseModel> _listClassFuture;
+  Future<SubjectResponseModel> _listSubjectFuture;
+  Future<BookingResponseModel> _listBookingFuture;
+  Future<NotificationResponseModel> _listNotificationFuture;
+  Future<ScheduleResponseModel> _listScheduleFuture;
+
+  Future<void> refreshData() {
+    setState(() {
+      _listUserFuture = userData();
+      _listClassFuture = classData();
+      _listSubjectFuture = subjectData();
+      _listBookingFuture = bookingData();
+      _listNotificationFuture = notificationData();
+      _listScheduleFuture = scheduleData();
+    });
+    return Future.delayed(Duration(seconds: 1));
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future:
-          Future.wait([userData(), classData(), subjectData(), bookingData()]),
+      future: Future.wait([
+        _listUserFuture,
+        _listClassFuture,
+        _listSubjectFuture,
+        _listBookingFuture,
+        _listNotificationFuture,
+        _listScheduleFuture,
+      ]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         if (snapshot.hasData) {
           userModel = snapshot.data[0];
           classModel = snapshot.data[1];
           subjectModel = snapshot.data[2];
           bookingModel = snapshot.data[3];
+          notificationModel = snapshot.data[4];
+          scheduleModel = snapshot.data[5];
           listClasses = classModel.listClasses;
           listSubjects = subjectModel.listSubject;
           listBookings = bookingModel.listBooking;
+          listNotifications = notificationModel.listNotification;
           saveBranchId(userModel.branchModels.elementAt(0).branchId);
           return WillPopScope(
             onWillPop: _onWillPop,
@@ -161,15 +361,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               userData: userDataFuture,
                             )
                           : _selectedIndex == 0
-                              ? Schedule()
-                              : Home(
-                                  userData: userDataFuture,
-                                  username: username,
-                                  image: userModel.image,
-                                  email: userModel.email,
-                                  listClassesInput: listClasses,
-                                  listSubjectsInput: listSubjects,
-                                  listBookingsInput: listBookings,
+                              ? Schedule(
+                                  schedule: scheduleModel,
+                                  branchName: userModel.branchModels
+                                      .elementAt(0)
+                                      .branchName)
+                              : new RefreshIndicator(
+                                  child: Home(
+                                    userData: userDataFuture,
+                                    username: username,
+                                    image: userModel.image,
+                                    email: userModel.email,
+                                    listClassesInput: listClasses,
+                                    listSubjectsInput: listSubjects,
+                                    listBookingsInput: listBookings,
+                                    listNotificationsInput: listNotifications,
+                                  ),
+                                  onRefresh: refreshData,
                                 ),
                     ),
               bottomNavigationBar: Container(
@@ -244,13 +452,15 @@ class Home extends StatelessWidget {
       this.email,
       this.listClassesInput,
       this.listSubjectsInput,
-      this.listBookingsInput})
+      this.listBookingsInput,
+      this.listNotificationsInput})
       : super(key: key);
 
   Future<UserResponseModel> userData;
   List<ClassModel> listClassesInput;
   List<SubjectModel> listSubjectsInput;
   List<BookingModel> listBookingsInput;
+  List<NotificationModel> listNotificationsInput;
   final GlobalKey<ScaffoldState> _key = GlobalKey<ScaffoldState>();
   String username;
   String image;
@@ -293,7 +503,21 @@ class Home extends StatelessWidget {
         }),
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                // Navigator.pushNamed(context, reply_routes.homeRoute);
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                    builder: (context) => new StudyWrapper(
+                      study: reply.ReplyApp(
+                        listNotification: listNotificationsInput,
+                      ),
+                      hasBottomNavBar: false,
+                      listNotification: listNotificationsInput,
+                    ),
+                  ),
+                );
+              },
               icon: Icon(
                 Icons.notifications_none_outlined,
                 color: AppColor.greenTheme,
@@ -325,7 +549,7 @@ class Home extends StatelessWidget {
           Container(
             width: double.infinity,
             height: 150,
-            margin: EdgeInsets.only(top: 15),
+            margin: EdgeInsets.only(top: 30),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount:
@@ -378,7 +602,7 @@ class Home extends StatelessWidget {
           ),
           Container(
             width: double.infinity,
-            color: Colors.grey.shade300,
+            // color: Colors.grey.shade300,
             height: 60.0,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -564,9 +788,10 @@ class Home extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
               color: Colors.grey,
               image: DecorationImage(
-                image: NetworkImage(
-                    // 'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F1.jpg?alt=media'
-                    'https://blog.coursify.me/wp-content/uploads/2016/04/online-classes-coursifyme.jpg'),
+                // image: NetworkImage(
+                //     // 'https://firebasestorage.googleapis.com/v0/b/dl-flutter-ui-challenges.appspot.com/o/img%2F1.jpg?alt=media'
+                //     'https://blog.coursify.me/wp-content/uploads/2016/04/online-classes-coursifyme.jpg'),
+                image: AssetImage("assets/images/classroom_close_opening.jpg"),
                 fit: BoxFit.cover,
               ),
             ),
@@ -616,7 +841,7 @@ class Home extends StatelessWidget {
                     image: NetworkImage(listSubjectsInput[index].image),
                     fit: BoxFit.cover)),
             alignment: Alignment.center,
-            margin: EdgeInsets.symmetric(horizontal: 10),
+            margin: EdgeInsets.symmetric(horizontal: 20),
             width: 100,
             height: 100,
           ),
@@ -664,8 +889,8 @@ class ProductListItem extends StatelessWidget {
         child: Row(
           children: <Widget>[
             Ink(
-              height: 100,
-              width: 100,
+              height: 90,
+              width: 90,
               decoration: BoxDecoration(
                 color: Colors.black,
                 image: DecorationImage(
@@ -717,264 +942,774 @@ class ProductListItem extends StatelessWidget {
 // HOME END
 
 // Schedule START
-final List<String> weekDays = ["S", "M", "T", "W", "T", "F", "S"];
-final List<int> dates = [5, 6, 7, 8, 9, 10, 11];
 
-class Schedule extends StatelessWidget {
-  final int selected = 5;
-  final TextStyle selectedText = TextStyle(
-    color: Colors.deepOrange,
-    fontWeight: FontWeight.bold,
-  );
-  final TextStyle daysText = TextStyle(
-    fontWeight: FontWeight.bold,
-    color: Colors.grey.shade800,
-  );
+class Schedule extends StatefulWidget {
+  const Schedule({
+    Key key,
+    this.schedule,
+    this.branchName,
+  }) : super(key: key);
+
+  final ScheduleResponseModel schedule;
+  final String branchName;
+
+  @override
+  _ScheduleState createState() => _ScheduleState();
+}
+
+class _ScheduleState extends State<Schedule> {
+  String dayOfWeek;
+  String month;
+  String year;
+  int dayOfToday;
+  int dayOfMonday;
+  int dayOfTuesday;
+  int dayOfWednesday;
+  int dayOfThursday;
+  int dayOfFriday;
+  int dayOfSaturday;
+  int dayOfSunday;
+  DateFormat formatterInit = new DateFormat('dd');
+  bool isSelectedMonday = false;
+  bool isSelectedTuesday = false;
+  bool isSelectedWednesday = false;
+  bool isSelectedThursday = false;
+  bool isSelectedFriday = false;
+  bool isSelectedSaturday = false;
+  bool isSelectedSunday = false;
+  List<SessionModel> listSession;
+
+  String selectedMonth;
+  bool isLoadingDataFromPickingDate;
+
+  String username;
+  Future<ScheduleResponseModel> scheduleDataFuture;
+
+  ScheduleResponseModel scheduleDataPicked;
+
+  bool isToday;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isToday = true;
+    isLoadingDataFromPickingDate = false;
+    dayOfWeek = DateFormat("EEEE").format(DateTime.now());
+    scheduleDataPicked = widget.schedule;
+    switch (dayOfWeek) {
+      case "Monday":
+        isSelectedMonday = true;
+        listSession = widget.schedule.monday.listSession;
+        break;
+      case "Tuesday":
+        isSelectedTuesday = true;
+        listSession = widget.schedule.tuesday.listSession;
+        break;
+      case "Wednesday":
+        isSelectedWednesday = true;
+        listSession = widget.schedule.wednesday.listSession;
+        break;
+      case "Thursday":
+        isSelectedThursday = true;
+        listSession = widget.schedule.thursday.listSession;
+        break;
+      case "Friday":
+        isSelectedFriday = true;
+        listSession = widget.schedule.friday.listSession;
+        break;
+      case "Saturday":
+        isSelectedSaturday = true;
+        listSession = widget.schedule.saturday.listSession;
+        break;
+      case "Sunday":
+        isSelectedSunday = true;
+        listSession = widget.schedule.sunday.listSession;
+        break;
+      default:
+    }
+    year = DateFormat("yyyy").format(DateTime.now());
+    selectedMonth = DateFormat("MM").format(DateTime.now());
+    switch (selectedMonth) {
+      case "01":
+        month = "Jan";
+        break;
+      case "02":
+        month = "Feb";
+        break;
+      case "03":
+        month = "Mar";
+        break;
+      case "04":
+        month = "Apr";
+        break;
+      case "05":
+        month = "May";
+        break;
+      case "06":
+        month = "Jun";
+        break;
+      case "07":
+        month = "July";
+        break;
+      case "08":
+        month = "Aug";
+        break;
+      case "09":
+        month = "Sep";
+        break;
+      case "10":
+        month = "Oct";
+        break;
+      case "11":
+        month = "Nov";
+        break;
+      case "12":
+        month = "Dec";
+        break;
+    }
+    dayOfToday = int.parse(DateFormat("dd").format(DateTime.now()));
+
+    dayOfMonday = int.parse(
+        formatterInit.format(DateTime.parse(widget.schedule.monday.datetime)));
+
+    dayOfTuesday = int.parse(
+        formatterInit.format(DateTime.parse(widget.schedule.tuesday.datetime)));
+
+    dayOfWednesday = int.parse(formatterInit
+        .format(DateTime.parse(widget.schedule.wednesday.datetime)));
+
+    dayOfThursday = int.parse(formatterInit
+        .format(DateTime.parse(widget.schedule.thursday.datetime)));
+
+    dayOfFriday = int.parse(
+        formatterInit.format(DateTime.parse(widget.schedule.friday.datetime)));
+
+    dayOfSaturday = int.parse(formatterInit
+        .format(DateTime.parse(widget.schedule.saturday.datetime)));
+
+    dayOfSunday = int.parse(
+        formatterInit.format(DateTime.parse(widget.schedule.sunday.datetime)));
+  }
+
+  _selectedDate(BuildContext context) async {
+    DateTime selectedDate = DateTime.now();
+
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2020, 8),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDate) {
+      selectedDate = picked;
+      setState(() {
+        isLoadingDataFromPickingDate = true;
+      });
+      scheduleDataPicked =
+          await scheduleData(DateFormat("yyyy-MM-dd").format(selectedDate));
+      setState(() {
+        year = DateFormat("yyyy").format(selectedDate);
+        selectedMonth = DateFormat("MM").format(selectedDate);
+        switch (selectedMonth) {
+          case "01":
+            month = "Jan";
+            break;
+          case "02":
+            month = "Feb";
+            break;
+          case "03":
+            month = "Mar";
+            break;
+          case "04":
+            month = "Apr";
+            break;
+          case "05":
+            month = "May";
+            break;
+          case "06":
+            month = "Jun";
+            break;
+          case "07":
+            month = "July";
+            break;
+          case "08":
+            month = "Aug";
+            break;
+          case "09":
+            month = "Sep";
+            break;
+          case "10":
+            month = "Oct";
+            break;
+          case "11":
+            month = "Nov";
+            break;
+          case "12":
+            month = "Dec";
+            break;
+        }
+      });
+      dayOfToday = int.parse(DateFormat("dd").format(selectedDate));
+
+      dayOfMonday = int.parse(formatterInit
+          .format(DateTime.parse(scheduleDataPicked.monday.datetime)));
+
+      dayOfTuesday = int.parse(formatterInit
+          .format(DateTime.parse(scheduleDataPicked.tuesday.datetime)));
+
+      dayOfWednesday = int.parse(formatterInit
+          .format(DateTime.parse(scheduleDataPicked.wednesday.datetime)));
+
+      dayOfThursday = int.parse(formatterInit
+          .format(DateTime.parse(scheduleDataPicked.thursday.datetime)));
+
+      dayOfFriday = int.parse(formatterInit
+          .format(DateTime.parse(scheduleDataPicked.friday.datetime)));
+
+      dayOfSaturday = int.parse(formatterInit
+          .format(DateTime.parse(scheduleDataPicked.saturday.datetime)));
+
+      dayOfSunday = int.parse(formatterInit
+          .format(DateTime.parse(scheduleDataPicked.sunday.datetime)));
+
+      switch (DateFormat("EEEE").format(selectedDate)) {
+        case "Monday":
+          isSelectedMonday = true;
+          isSelectedTuesday = false;
+          isSelectedWednesday = false;
+          isSelectedThursday = false;
+          isSelectedFriday = false;
+          isSelectedSaturday = false;
+          isSelectedSunday = false;
+          // We set list session of selected day here
+          listSession = scheduleDataPicked.monday.listSession;
+          break;
+        case "Tuesday":
+          isSelectedMonday = false;
+          isSelectedTuesday = true;
+          isSelectedWednesday = false;
+          isSelectedThursday = false;
+          isSelectedFriday = false;
+          isSelectedSaturday = false;
+          isSelectedSunday = false;
+          // We set list session of selected day here
+          listSession = scheduleDataPicked.tuesday.listSession;
+          break;
+        case "Wednesday":
+          isSelectedMonday = false;
+          isSelectedTuesday = false;
+          isSelectedWednesday = true;
+          isSelectedThursday = false;
+          isSelectedFriday = false;
+          isSelectedSaturday = false;
+          isSelectedSunday = false;
+          // We set list session of selected day here
+          listSession = scheduleDataPicked.wednesday.listSession;
+          break;
+        case "Thursday":
+          isSelectedMonday = false;
+          isSelectedTuesday = false;
+          isSelectedWednesday = false;
+          isSelectedThursday = true;
+          isSelectedFriday = false;
+          isSelectedSaturday = false;
+          isSelectedSunday = false;
+          // We set list session of selected day here
+          listSession = scheduleDataPicked.thursday.listSession;
+          break;
+        case "Friday":
+          isSelectedMonday = false;
+          isSelectedTuesday = false;
+          isSelectedWednesday = false;
+          isSelectedThursday = false;
+          isSelectedFriday = true;
+          isSelectedSaturday = false;
+          isSelectedSunday = false;
+          // We set list session of selected day here
+          listSession = scheduleDataPicked.friday.listSession;
+          break;
+        case "Saturday":
+          isSelectedMonday = false;
+          isSelectedTuesday = false;
+          isSelectedWednesday = false;
+          isSelectedThursday = false;
+          isSelectedFriday = false;
+          isSelectedSaturday = true;
+          isSelectedSunday = false;
+          // We set list session of selected day here
+          listSession = scheduleDataPicked.saturday.listSession;
+          break;
+        case "Sunday":
+          isSelectedMonday = false;
+          isSelectedTuesday = false;
+          isSelectedWednesday = false;
+          isSelectedThursday = false;
+          isSelectedFriday = false;
+          isSelectedSaturday = false;
+          isSelectedSunday = true;
+          // We set list session of selected day here
+          listSession = scheduleDataPicked.sunday.listSession;
+          break;
+        default:
+      }
+      print("selectedDate: " + selectedDate.toString());
+      print("Today: " + DateTime.now().toString());
+
+      if (DateFormat("yyyy-MM-dd").format(selectedDate) !=
+          DateFormat("yyyy-MM-dd").format(DateTime.now())) {
+        isToday = false;
+      } else {
+        isToday = true;
+      }
+      isLoadingDataFromPickingDate = false;
+    }
+  }
+
+  Future<ScheduleResponseModel> scheduleData(String pickedDate) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    username = prefs.getString("username");
+    APIService apiService = new APIService();
+    scheduleDataFuture = apiService.getScheduleData(username, pickedDate);
+    return scheduleDataFuture;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        brightness: Brightness.light,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Text('Tuần lễ của tôi'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
-      body: HeaderWidget(
-        header: Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Text(
-                  "Tháng 1".toUpperCase(),
-                  style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.0,
-                      letterSpacing: 2.0),
+    return isLoadingDataFromPickingDate
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Stack(
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+                alignment: Alignment.topCenter,
+                color: Color(0xFFF0F0F0),
+                height: MediaQuery.of(context).size.height,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      hoverColor: AppColor.orange,
+                      focusColor: AppColor.orange,
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).size.height / 40),
+                      onPressed: () {
+                        _selectedDate(context);
+                      },
+                    ),
+                    Row(
+                      children: [
+                        // Icon(Icons.calendar_today),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        RichText(
+                          text: TextSpan(
+                              text: month,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0XFF263064),
+                                fontSize: 22,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: " " + year,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ]),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      isToday ? "Today" : "",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0XFF3E3993),
+                      ),
+                    )
+                  ],
                 ),
               ),
-              Row(
-                children: weekDays.map((w) {
-                  return Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: weekDays.indexOf(w) == selected
-                              ? Colors.orange.shade100
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(30.0))),
-                      padding: const EdgeInsets.only(top: 20, bottom: 8.0),
-                      child: Text(
-                        w,
-                        style: weekDays.indexOf(w) == selected
-                            ? selectedText
-                            : daysText,
+              Positioned(
+                top: 100,
+                child: Container(
+                  height: MediaQuery.of(context).size.height - 160,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(top: 15, bottom: 30),
+                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            buildDateColumn(
+                                "M", dayOfMonday, isSelectedMonday, "Monday"),
+                            buildDateColumn("T", dayOfTuesday,
+                                isSelectedTuesday, "Tuesday"),
+                            buildDateColumn("W", dayOfWednesday,
+                                isSelectedWednesday, "Wednesday"),
+                            buildDateColumn("T", dayOfThursday,
+                                isSelectedThursday, "Thursday"),
+                            buildDateColumn(
+                                "F", dayOfFriday, isSelectedFriday, "Friday"),
+                            buildDateColumn("Sa", dayOfSaturday,
+                                isSelectedSaturday, "Saturday"),
+                            buildDateColumn(
+                                "S", dayOfSunday, isSelectedSunday, "Sunday"),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              Row(
-                children: dates.map((d) {
-                  return Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: dates.indexOf(d) == selected
-                              ? Colors.orange.shade100
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.vertical(
-                              bottom: Radius.circular(30.0))),
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 20.0),
-                      child: Text("$d",
-                          style: dates.indexOf(d) == selected
-                              ? selectedText
-                              : daysText),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 10.0),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          // physics: ScrollPhysics(),
+                          child: Column(
+                            children: [
+                              ListView.builder(
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: listSession.isNotEmpty
+                                      ? listSession.length
+                                      : 1,
+                                  itemBuilder: (context, index) {
+                                    return listSession.isNotEmpty
+                                        ? buildTaskListItem(context, index,
+                                            listSession, widget.branchName)
+                                        : Container(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                                "Thời gian này không có lớp nào diễn ra trong ngày"),
+                                          );
+                                  }),
+                              // buildTaskListItem(context),
+                              // buildTaskListItem(context),
+                              // buildTaskListItem(context),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
             ],
-          ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _buildTaskWithDate(),
-              const SizedBox(height: 20.0),
-              _buildTask(),
-              const SizedBox(height: 20.0),
-              _buildTask(),
-              const SizedBox(height: 20.0),
-              _buildTaskWithDate(),
-              const SizedBox(height: 20.0),
-              _buildTask(),
-              const SizedBox(height: 20.0),
-              _buildTask(),
-              const SizedBox(height: 20.0),
-            ],
-          ),
-        ),
-      ),
-    );
+          );
   }
 
-  Row _buildTaskWithDate() {
-    return Row(
-      children: <Widget>[
-        Text(
-          "JAN\n10",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5),
-        ),
-        const SizedBox(width: 20.0),
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20.0),
-                bottomRight: Radius.circular(20.0),
-                bottomLeft: Radius.circular(20.0),
+  Container buildTaskListItem(BuildContext context, int index,
+      List<SessionModel> listSession, String branchName) {
+    DateTime dt = DateTime.parse(listSession[index].startTime);
+    String dtStartFormat = DateFormat("kk:mm").format(dt);
+    return Container(
+      margin: EdgeInsets.only(bottom: 25),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 15,
+                height: 10,
+                decoration: BoxDecoration(
+                    color: Colors.orange,
+                    borderRadius: BorderRadius.horizontal(
+                      right: Radius.circular(5),
+                    )),
               ),
-              color: Colors.white,
-            ),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+              SizedBox(
+                width: 15,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width - 60,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                          // Start Time Here
+                          text: dtStartFormat,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: " AM",
+                              style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                              ),
+                            )
+                          ]),
+                    ),
+                    // Process this later
+
+                    // Text(
+                    //   "1 h 45 min",
+                    //   style: TextStyle(
+                    //     color: Colors.grey,
+                    //   ),
+                    // )
+                  ],
+                ),
+              )
+            ],
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            height: 185,
             width: double.infinity,
+            decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.grey[300]),
+                borderRadius: BorderRadius.circular(20)),
+            margin: EdgeInsets.only(right: 10, left: 30),
+            padding: EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 Text(
-                  "10:30 - 11:30AM",
-                  style:
-                      TextStyle(letterSpacing: 2.5, color: AppColor.greenTheme),
-                ),
-                const SizedBox(height: 5.0),
-                Text(
-                  "Anh Ngữ Giao Tiếp",
+                  // Subject Name here
+                  listSession[index].subjectName,
                   style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.greenTheme,
-                      fontSize: 16.0),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
-                // const SizedBox(height: 5.0),
-                Text("John Doe")
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  // Class Name here
+                  listSession[index].className,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 9,
+                      backgroundImage: NetworkImage(
+                          // Image of Teacher here
+                          listSession[index].teacherImage),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          // Teacher Name here
+                          listSession[index].teacherName,
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        // Later if we need phone number of teacher, we'll put the parameter phone number here
+
+                        Text(
+                          listSession[index].teacherPhone,
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      size: 20,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          // Branch Name here
+                          // "Chi nhánh trung tâm AB " +
+                          branchName,
+                          style: TextStyle(
+                            fontSize: 15,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        // Room Name here
+                        Text(
+                          "Room " + listSession[index].roomName,
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                )
               ],
             ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Container _buildTask() {
-    return Container(
-      padding: const EdgeInsets.only(left: 70.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            "10:30 - 11:30AM",
-            style: TextStyle(letterSpacing: 2.5, color: Colors.white),
-          ),
-          const SizedBox(height: 5.0),
-          Text(
-            "Anh Ngữ Giao Tiếp",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 16.0),
-          ),
-          Text("John Doe")
+          )
         ],
       ),
     );
   }
-}
 
-class HeaderWidget extends StatelessWidget {
-  final Widget body;
-  final Widget header;
-  final Color headerColor;
-  final Color backColor;
-
-  const HeaderWidget(
-      {Key key,
-      this.body,
-      this.header,
-      this.headerColor = Colors.white,
-      this.backColor = AppColor.greenTheme})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildBody();
-  }
-
-  Stack _buildBody() {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-          right: 0,
-          top: 0,
-          width: 10,
-          height: 200,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-                color: backColor,
-                borderRadius:
-                    BorderRadius.only(topLeft: Radius.circular(20.0))),
-          ),
+  Stack buildDateColumn(
+      String weekDay, int date, bool isActive, String selectedDay) {
+    return Stack(children: [
+      AnimatedOpacity(
+        duration: const Duration(milliseconds: 500),
+        opacity: isActive ? 1.0 : 0.0,
+        child: Container(
+          decoration: isActive
+              ? BoxDecoration(
+                  color: AppColor.orange,
+                  borderRadius: BorderRadius.circular(10))
+              : BoxDecoration(),
+          height: 55,
+          width: 35,
         ),
-        Positioned(
-          right: 0,
-          top: 100,
-          width: 50,
-          bottom: 0,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: backColor,
-            ),
-          ),
-        ),
-        Column(
-          children: <Widget>[
-            if (header != null)
-              Container(
-                  margin: const EdgeInsets.only(right: 10.0),
-                  decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.only(bottomRight: Radius.circular(20.0)),
-                    color: headerColor,
-                  ),
-                  child: header),
-            if (body != null)
-              Expanded(
-                child: Material(
-                    shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.only(topLeft: Radius.circular(30.0))),
-                    elevation: 0,
-                    color: backColor,
-                    child: body),
+      ),
+      Container(
+        decoration: BoxDecoration(),
+        height: 55,
+        width: 35,
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              switch (selectedDay) {
+                case "Monday":
+                  isSelectedMonday = true;
+                  isSelectedTuesday = false;
+                  isSelectedWednesday = false;
+                  isSelectedThursday = false;
+                  isSelectedFriday = false;
+                  isSelectedSaturday = false;
+                  isSelectedSunday = false;
+                  // We set list session of selected day here
+                  listSession = scheduleDataPicked.monday.listSession;
+                  break;
+                case "Tuesday":
+                  isSelectedMonday = false;
+                  isSelectedTuesday = true;
+                  isSelectedWednesday = false;
+                  isSelectedThursday = false;
+                  isSelectedFriday = false;
+                  isSelectedSaturday = false;
+                  isSelectedSunday = false;
+                  // We set list session of selected day here
+                  listSession = scheduleDataPicked.tuesday.listSession;
+                  break;
+                case "Wednesday":
+                  isSelectedMonday = false;
+                  isSelectedTuesday = false;
+                  isSelectedWednesday = true;
+                  isSelectedThursday = false;
+                  isSelectedFriday = false;
+                  isSelectedSaturday = false;
+                  isSelectedSunday = false;
+                  // We set list session of selected day here
+                  listSession = scheduleDataPicked.wednesday.listSession;
+                  break;
+                case "Thursday":
+                  isSelectedMonday = false;
+                  isSelectedTuesday = false;
+                  isSelectedWednesday = false;
+                  isSelectedThursday = true;
+                  isSelectedFriday = false;
+                  isSelectedSaturday = false;
+                  isSelectedSunday = false;
+                  // We set list session of selected day here
+                  listSession = scheduleDataPicked.thursday.listSession;
+                  break;
+                case "Friday":
+                  isSelectedMonday = false;
+                  isSelectedTuesday = false;
+                  isSelectedWednesday = false;
+                  isSelectedThursday = false;
+                  isSelectedFriday = true;
+                  isSelectedSaturday = false;
+                  isSelectedSunday = false;
+                  // We set list session of selected day here
+                  listSession = scheduleDataPicked.friday.listSession;
+                  break;
+                case "Saturday":
+                  isSelectedMonday = false;
+                  isSelectedTuesday = false;
+                  isSelectedWednesday = false;
+                  isSelectedThursday = false;
+                  isSelectedFriday = false;
+                  isSelectedSaturday = true;
+                  isSelectedSunday = false;
+                  // We set list session of selected day here
+                  listSession = scheduleDataPicked.saturday.listSession;
+                  break;
+                case "Sunday":
+                  isSelectedMonday = false;
+                  isSelectedTuesday = false;
+                  isSelectedWednesday = false;
+                  isSelectedThursday = false;
+                  isSelectedFriday = false;
+                  isSelectedSaturday = false;
+                  isSelectedSunday = true;
+                  // We set list session of selected day here
+                  listSession = scheduleDataPicked.sunday.listSession;
+                  break;
+                default:
+              }
+            });
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                weekDay,
+                style: TextStyle(
+                    color: isActive ? Colors.white : Colors.grey, fontSize: 11),
               ),
-          ],
+              Text(
+                date.toString(),
+                style: TextStyle(
+                    color: isActive ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
         ),
-      ],
-    );
+      ),
+    ]);
   }
 }
 
@@ -1183,12 +1918,18 @@ class UserInfoAnother extends StatelessWidget {
                                 ListTile(
                                   leading: Icon(Icons.phone),
                                   title: Text("Số điện thoại phụ huynh"),
-                                  subtitle: Text(snapshot.data.parentPhone),
+                                  subtitle: Text(
+                                      snapshot.data.parentPhone.isNotEmpty
+                                          ? snapshot.data.parentPhone
+                                          : "Chưa cập nhật"),
                                 ),
                                 ListTile(
                                   leading: Icon(Icons.person),
                                   title: Text("Tên phụ huynh"),
-                                  subtitle: Text(snapshot.data.parentName),
+                                  subtitle: Text(
+                                      snapshot.data.parentName.isNotEmpty
+                                          ? snapshot.data.parentName
+                                          : "Chưa cập nhật"),
                                 ),
                               ],
                             ),
@@ -1318,3 +2059,79 @@ class Avatar extends StatelessWidget {
 }
 
 // Profile Content END
+
+/// Wrap the studies with this to display a back button and allow the user to
+/// exit them at any time.
+class StudyWrapper extends StatefulWidget {
+  const StudyWrapper({
+    Key key,
+    this.study,
+    this.alignment = AlignmentDirectional.bottomStart,
+    this.hasBottomNavBar = false,
+    this.listNotification,
+  }) : super(key: key);
+
+  final Widget study;
+  final bool hasBottomNavBar;
+  final AlignmentDirectional alignment;
+  final List<NotificationModel> listNotification;
+
+  @override
+  _StudyWrapperState createState() => _StudyWrapperState();
+}
+
+class _StudyWrapperState extends State<StudyWrapper> {
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return Stack(
+      children: [
+        Semantics(
+          sortKey: const OrdinalSortKey(1),
+          child: RestorationScope(
+            restorationId: 'study_wrapper',
+            child: widget.study,
+          ),
+        ),
+        SafeArea(
+          child: Align(
+            alignment: widget.alignment,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: widget.hasBottomNavBar
+                      ? kBottomNavigationBarHeight + 16.0
+                      : 16.0),
+              child: Semantics(
+                sortKey: const OrdinalSortKey(0),
+                button: true,
+                enabled: true,
+                excludeSemantics: true,
+                child: FloatingActionButton.extended(
+                  backgroundColor: AppColor.blueForText,
+                  heroTag: _BackButtonHeroTag(),
+                  key: const ValueKey('Back'),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .popUntil((route) => route.settings.name == '/home');
+                  },
+                  icon: IconTheme(
+                    data: IconThemeData(color: colorScheme.onPrimary),
+                    child: const BackButtonIcon(),
+                  ),
+                  label: Text(
+                    MaterialLocalizations.of(context).backButtonTooltip,
+                    style: textTheme.button.apply(color: colorScheme.onPrimary),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BackButtonHeroTag {}

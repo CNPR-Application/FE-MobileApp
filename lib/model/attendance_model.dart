@@ -30,14 +30,14 @@ class AttendanceModel {
   int attendanceId;
   int sessionId;
   String status;
-  String checkingDate;
+  String startTime;
   int studentInClassId;
 
   AttendanceModel({
     this.attendanceId,
     this.sessionId,
     this.status,
-    this.checkingDate,
+    this.startTime,
     this.studentInClassId,
   });
 
@@ -46,7 +46,7 @@ class AttendanceModel {
       attendanceId: json['attendanceId'] != null ? json['attendanceId'] : 0,
       sessionId: json['sessionId'] != null ? json['sessionId'] : 0,
       status: json['status'] != null ? json['status'] : "",
-      checkingDate: json['checkingDate'] != null ? json['checkingDate'] : "",
+      startTime: json['startTime'] != null ? json['startTime'] : "",
       studentInClassId:
           json['studentInClassId'] != null ? json['studentInClassId'] : 0,
     );
