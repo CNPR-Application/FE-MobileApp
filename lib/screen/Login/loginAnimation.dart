@@ -126,7 +126,8 @@ class StaggerAnimation extends StatelessWidget {
   Widget build(BuildContext context) {
     buttonController.addListener(() {
       if (buttonController.isCompleted && dataValid == true) {
-        Navigator.pushNamed(context, "/home");
+        // Navigator.pushNamed(context, "/home");
+        Navigator.pushNamed(context, "/onboarding");
       }
       if (buttonController.isCompleted && !dataValid) {
         // Navigator.pushNamed(context, "/login");

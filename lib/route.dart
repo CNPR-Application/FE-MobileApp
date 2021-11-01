@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:lcss_mobile_app/Util/constant.dart';
 import 'package:lcss_mobile_app/screen/Login/login.dart';
 import 'package:lcss_mobile_app/screen/Attendance/attendance_student.dart';
 import 'package:lcss_mobile_app/screen/BookingHistory/booking_history.dart';
@@ -82,6 +83,11 @@ class MyApp extends StatelessWidget {
             return new MyCustomRoute(
               builder: (_) => new StudyWrapper(
                   study: reply.ReplyApp(), hasBottomNavBar: false),
+              settings: settings,
+            );
+          case '/onboarding':
+            return new MyCustomRoute(
+              builder: (_) => new Intro9(Colors.white),
               settings: settings,
             );
         }

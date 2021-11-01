@@ -432,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         } else
-          return Intro5(AppColor.greenTheme);
+          return Intro5(Colors.white);
       },
     );
   }
