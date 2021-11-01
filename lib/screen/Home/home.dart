@@ -692,12 +692,10 @@ class Home extends StatelessWidget {
                   _buildRow(context, Icons.person_pin, "Lớp học"),
                   _buildDivider(),
                   _buildRow(context, Icons.message, "Lớp học sắp khai giảng",
-                      showBadge: true),
+                      showBadge: false),
                   _buildDivider(),
                   _buildRow(context, Icons.notifications, "Thông báo",
                       showBadge: true),
-                  _buildDivider(),
-                  _buildRow(context, Icons.settings, "Hệ thống"),
                   _buildDivider(),
                   _buildRow(context, Icons.email, "Đánh giá lớp học"),
                   _buildDivider(),
@@ -735,6 +733,20 @@ class Home extends StatelessWidget {
           if (title == 'Đánh giá lớp học') {
             Navigator.pushNamed(context, "/checkFeedback");
           }
+          if (title == 'Thông báo') {
+            Navigator.push(
+              context,
+              new MaterialPageRoute(
+                builder: (context) => new StudyWrapper(
+                  study: reply.ReplyApp(
+                    listNotification: listNotificationsInput,
+                  ),
+                  hasBottomNavBar: false,
+                  listNotification: listNotificationsInput,
+                ),
+              ),
+            );
+          }
         },
         child: Row(children: [
           Icon(
@@ -762,7 +774,7 @@ class Home extends StatelessWidget {
                   borderRadius: BorderRadius.circular(5.0),
                 ),
                 child: Text(
-                  "10+",
+                  "!",
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 12.0,
@@ -1386,10 +1398,34 @@ class _ScheduleState extends State<Schedule> {
                                     return listSession.isNotEmpty
                                         ? buildTaskListItem(context, index,
                                             listSession, widget.branchName)
-                                        : Container(
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                                "Thời gian này không có lớp nào diễn ra trong ngày"),
+                                        // : Container(
+                                        //     alignment: Alignment.center,
+                                        //     child: Text(
+                                        //         "Thời gian này không có lớp nào diễn ra trong ngày"),
+                                        //   );
+                                        : Column(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.center,
+                                                constraints: BoxConstraints(
+                                                    maxHeight: 150,
+                                                    maxWidth: 150),
+                                                child: Intro8(Colors.white),
+                                              ),
+                                              Container(
+                                                alignment: Alignment.center,
+                                                margin: EdgeInsets.only(
+                                                  left: 30,
+                                                  right: 30,
+                                                ),
+                                                child: Text(
+                                                  "Thời gian này không có lớp nào diễn ra trong ngày",
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ],
                                           );
                                   }),
                               // buildTaskListItem(context),

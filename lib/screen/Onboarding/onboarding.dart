@@ -117,3 +117,34 @@ class _Intro7State extends State<Intro7> {
     );
   }
 }
+
+class Intro8 extends StatefulWidget {
+  const Intro8(this.color);
+
+  final Color color;
+
+  @override
+  _Intro8State createState() => _Intro8State();
+}
+
+class _Intro8State extends State<Intro8> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: widget.color,
+      body: Column(
+        children: [
+          Flexible(
+            flex: 8,
+            child: FlareActor(
+              'assets/flare/empty.flr',
+              alignment: Alignment.center,
+              fit: BoxFit.scaleDown,
+              animation: 'idle',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
