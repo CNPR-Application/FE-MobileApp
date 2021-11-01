@@ -9,6 +9,7 @@ import 'package:lcss_mobile_app/screen/Class/search_class.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
 import 'package:lcss_mobile_app/screen/Feedback/feedback_list.dart';
 import 'package:lcss_mobile_app/screen/Home/home.dart';
+import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
 import 'package:lcss_mobile_app/screen/Subject/search_subject.dart';
 import 'package:lcss_mobile_app/screen/reply/app.dart' as reply;
 

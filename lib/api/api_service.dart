@@ -163,7 +163,7 @@ class APIService {
         "classes/" +
         branchId.toString().trim() +
         "/filter?" +
-        "&subjectId=0&shiftId=0&status=waiting&pageNo=" +
+        "subjectId=0&shiftId=0&status=waiting&pageNo=" +
         pageNo.toString().trim() +
         "&pageSize=" +
         pageSize.toString().trim());

@@ -79,7 +79,7 @@ flutter:
     - assets/logo.svg
     - assets/vectors/edit.svg
     - assets/images/
-    - assets/flare/bus.flr
+    - assets/flare/
     - assets/icons/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

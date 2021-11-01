@@ -34,13 +34,14 @@ class ClassModel {
   int slot;
   int subjectId;
   String subjectName;
+  double subjectPrice;
   int branchId;
   String branchName;
   int shiftId;
   String shiftDescription;
   int teacherId;
   String teacherName;
-  int roomName;
+  String roomName;
   int roomId;
 
   ClassModel({
@@ -51,6 +52,7 @@ class ClassModel {
     this.slot,
     this.subjectId,
     this.subjectName,
+    this.subjectPrice,
     this.branchId,
     this.branchName,
     this.shiftId,
@@ -70,6 +72,7 @@ class ClassModel {
       slot: json['slot'] != null ? json['slot'] : 0,
       subjectId: json['subjectId'] != null ? json['subjectId'] : 0,
       subjectName: json['subjectName'] != null ? json['subjectName'] : "",
+      subjectPrice: json['subjectPrice'] != null ? json['subjectPrice'] : 0,
       branchId: json['branchId'] != null ? json['branchId'] : 0,
       branchName: json['branchName'] != null ? json['branchName'] : "",
       shiftId: json['shiftId'] != null ? json['shiftId'] : 0,
@@ -77,8 +80,8 @@ class ClassModel {
           json['shiftDescription'] != null ? json['shiftDescription'] : "",
       teacherId: json['teacherId'] != null ? json['teacherId'] : 0,
       teacherName: json['teacherName'] != null ? json['teacherName'] : "",
-      roomName: json['roomName'] != null ? json['roomName'] : 0,
-      roomId: json['roomId'] != null ? json['roomId'] : 0,
+      roomName: json['roomName'] != null ? json['roomName'] : "",
+      roomId: json['roomId'] != null ? json['roomId'] : null,
     );
   }
 }

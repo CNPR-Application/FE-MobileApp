@@ -55,3 +55,65 @@ class _Intro5State extends State<Intro5> {
     );
   }
 }
+
+class Intro6 extends StatefulWidget {
+  Intro6(this.color);
+
+  final Color color;
+
+  @override
+  _Intro6State createState() => _Intro6State();
+}
+
+class _Intro6State extends State<Intro6> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: widget.color,
+      body: Column(
+        children: [
+          Flexible(
+            flex: 8,
+            child: FlareActor(
+              'assets/flare/loading.flr',
+              alignment: Alignment.center,
+              fit: BoxFit.scaleDown,
+              animation: 'Alarm',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Intro7 extends StatefulWidget {
+  const Intro7(this.color);
+
+  final Color color;
+
+  @override
+  _Intro7State createState() => _Intro7State();
+}
+
+class _Intro7State extends State<Intro7> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: widget.color,
+      body: Column(
+        children: [
+          Flexible(
+            flex: 8,
+            child: FlareActor(
+              'assets/flare/cloud.flr',
+              alignment: Alignment.center,
+              fit: BoxFit.scaleDown,
+              animation: '1298-floating-cloud',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -197,18 +197,18 @@ class _HomeScreenState extends State<HomeScreen> {
         //   '/home',
         // );
         print("Hello Adakama");
-        Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (context) => new StudyWrapper(
-              study: reply.ReplyApp(
-                listNotification: listNotifications,
-              ),
-              hasBottomNavBar: false,
-              listNotification: listNotifications,
-            ),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   new MaterialPageRoute(
+        //     builder: (context) => new StudyWrapper(
+        //       study: reply.ReplyApp(
+        //         listNotification: listNotifications,
+        //       ),
+        //       hasBottomNavBar: false,
+        //       listNotification: listNotifications,
+        //     ),
+        //   ),
+        // );
       });
     });
   }
@@ -409,15 +409,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         tabs: [
                           GButton(
                             icon: Icons.access_alarm,
-                            text: 'Schedule',
+                            text: 'Thời khóa biểu',
                           ),
                           GButton(
                             icon: Icons.home_outlined,
-                            text: 'Home',
+                            text: 'Trang chủ',
                           ),
                           GButton(
                             icon: Icons.account_circle_outlined,
-                            text: 'Profile',
+                            text: 'Hồ sơ',
                           ),
                         ],
                         selectedIndex: _selectedIndex,
@@ -1278,7 +1278,7 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return isLoadingDataFromPickingDate
         ? Center(
-            child: CircularProgressIndicator(),
+            child: Intro6(Colors.white),
           )
         : Stack(
             children: [
