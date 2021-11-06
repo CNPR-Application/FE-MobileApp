@@ -112,7 +112,7 @@ class _Intro7State extends State<Intro7> {
               'assets/flare/cloud.flr',
               alignment: Alignment.center,
               fit: BoxFit.scaleDown,
-              animation: '1298-floating-cloud',
+              animation: 'Animations',
             ),
           ),
         ],
@@ -184,7 +184,7 @@ class _Intro9State extends State<Intro9> {
               child: Container(
                 margin: EdgeInsets.all(30),
                 child: Text(
-                  "Chào mừng bạn lần đầu đến với ứng dụng dành cho học sinh LCSS",
+                  "Chào mừng bạn đến với ứng dụng dành cho học sinh LCSS",
                   style: TextStyle(
                     fontSize: 20,
                   ),
@@ -244,4 +244,140 @@ class SlowMoController extends FlareController {
   void setViewTransform(Mat2D viewTransform) {
     // intentionally empty, we don't need the viewTransform in this controller
   }
+}
+
+class EndLoopController extends FlareController {
+  final String _animation;
+  final double _loopAmount;
+  final double _mix;
+  ActorAnimation _actor;
+  double _duration = 0.0;
+
+  EndLoopController(this._animation, this._loopAmount, [this._mix = 0.5]);
+
+  @override
+  void initialize(FlutterActorArtboard artboard) {
+    _actor = artboard.getAnimation(_animation);
+  }
+
+  @override
+  bool advance(FlutterActorArtboard artboard, double elapsed) {
+    _duration += elapsed;
+
+    if (_duration > _actor.duration) {
+      final double loopStart = _actor.duration - _loopAmount;
+      final double loopProgress = _duration - _actor.duration;
+      _duration = loopStart + loopProgress;
+    }
+    _actor.apply(_duration, artboard, _mix);
+    return true;
+  }
+
+  @override
+  void setViewTransform(Mat2D viewTransform) {}
+}
+
+class Intro10 extends StatefulWidget {
+  const Intro10(this.color);
+
+  final Color color;
+
+  @override
+  _Intro10State createState() => _Intro10State();
+}
+
+class _Intro10State extends State<Intro10> {
+  EndLoopController _controller = EndLoopController("Animations", 5.5);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: widget.color,
+      body: Column(
+        children: [
+          Flexible(
+            flex: 8,
+            child: FlareActor(
+              'assets/flare/book.flr',
+              alignment: Alignment.center,
+              fit: BoxFit.scaleDown,
+              animation: 'Animations',
+              controller: _controller,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Intro11 extends StatefulWidget {
+  const Intro11(this.color);
+
+  final Color color;
+
+  @override
+  _Intro11State createState() => _Intro11State();
+}
+
+class _Intro11State extends State<Intro11> {
+  SingleLoopController _controller = SingleLoopController("bkp", 1);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: widget.color,
+      body: Column(
+        children: [
+          Flexible(
+            flex: 8,
+            child: FlareActor(
+              'assets/flare/home.flr',
+              alignment: Alignment.center,
+              fit: BoxFit.scaleDown,
+              animation: 'bkp',
+              controller: _controller,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SingleLoopController extends FlareController {
+  final String _animation;
+  final double _loopAmount;
+  final double _mix;
+  ActorAnimation _actor;
+  double _duration = 0;
+  double _loopCount = 0;
+
+  SingleLoopController(this._animation, this._loopAmount, [this._mix = 0.5]);
+
+  @override
+  void initialize(FlutterActorArtboard artBoard) {
+    _actor = artBoard.getAnimation(_animation);
+  }
+
+  @override
+  bool advance(FlutterActorArtboard artBoard, double elapsed) {
+    if (_loopCount >= _loopAmount) {
+      // Looped enough times!
+      _actor.apply(_actor.duration, artBoard, 1);
+      return false;
+    }
+    _duration += elapsed;
+
+    if (_duration >= _actor.duration) {
+      // Loop!
+      _loopCount++;
+      _duration %= _actor.duration;
+    }
+    _actor.apply(_duration, artBoard, _mix);
+    return true;
+  }
+
+  @override
+  void setViewTransform(Mat2D viewTransform) {}
 }

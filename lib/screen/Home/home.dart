@@ -106,7 +106,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-    flutterLocalNotificationsPlugin.initialize(initSetting);
+    flutterLocalNotificationsPlugin.initialize(initSetting,
+        onSelectNotification: _onSelectNotification);
 
     var androidDetails =
         AndroidNotificationDetails('1', 'channelName', 'channelDescription');
@@ -120,33 +121,45 @@ class _HomeScreenState extends State<HomeScreen> {
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        RemoteNotification notification = message.notification;
-        AndroidNotification android = message.notification?.android;
+        // RemoteNotification notification = message.notification;
+        // AndroidNotification android = message.notification?.android;
 
-        if (notification != null && android != null) {
-          flutterLocalNotificationsPlugin.show(
-              notification.hashCode,
-              notification.title,
-              notification.body,
-              NotificationDetails(
-                android: AndroidNotificationDetails(
-                  channel.id,
-                  channel.name,
-                  channel.description,
-                  // TODO add a proper drawable resource to android, for now using
-                  //      one that already exists in example app.
-                  icon: 'launch_background',
-                ),
-              ));
-        }
-        if (!notTurnBack) {
-          Navigator.pushNamed(
-            context,
-            '/login',
-          );
-          notTurnBack = true;
-        }
-        print("Hello");
+        // if (notification != null && android != null) {
+        //   flutterLocalNotificationsPlugin.show(
+        //       notification.hashCode,
+        //       notification.title,
+        //       notification.body,
+        //       NotificationDetails(
+        //         android: AndroidNotificationDetails(
+        //           channel.id,
+        //           channel.name,
+        //           channel.description,
+        //           // TODO add a proper drawable resource to android, for now using
+        //           //      one that already exists in example app.
+        //           icon: 'launch_background',
+        //         ),
+        //       ));
+        // }
+        // if (!notTurnBack) {
+        //   Navigator.pushNamed(
+        //     context,
+        //     '/login',
+        //   );
+        //   notTurnBack = true;
+        // }
+        print("Hello Notification");
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new StudyWrapper(
+              study: reply.ReplyApp(
+                listNotification: listNotifications,
+                loadingData: true,
+              ),
+              hasBottomNavBar: false,
+            ),
+          ),
+        );
       }
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         RemoteNotification notification = message.notification;
@@ -169,27 +182,40 @@ class _HomeScreenState extends State<HomeScreen> {
               ));
         }
         print("Oh yeah we got it");
+
+        // Navigator.push(
+        //   context,
+        //   new MaterialPageRoute(
+        //     builder: (context) => new StudyWrapper(
+        //       study: reply.ReplyApp(
+        //         listNotification: listNotifications,
+        //         loadingData: true,
+        //       ),
+        //       hasBottomNavBar: false,
+        //     ),
+        //   ),
+        // );
       });
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        RemoteNotification notification = message.notification;
-        AndroidNotification android = message.notification?.android;
+        // RemoteNotification notification = message.notification;
+        // AndroidNotification android = message.notification?.android;
 
-        if (notification != null && android != null) {
-          flutterLocalNotificationsPlugin.show(
-              notification.hashCode,
-              notification.title,
-              notification.body,
-              NotificationDetails(
-                android: AndroidNotificationDetails(
-                  channel.id,
-                  channel.name,
-                  channel.description,
-                  // TODO add a proper drawable resource to android, for now using
-                  //      one that already exists in example app.
-                  icon: 'launch_background',
-                ),
-              ));
-        }
+        // if (notification != null && android != null) {
+        //   flutterLocalNotificationsPlugin.show(
+        //       notification.hashCode,
+        //       notification.title,
+        //       notification.body,
+        //       NotificationDetails(
+        //         android: AndroidNotificationDetails(
+        //           channel.id,
+        //           channel.name,
+        //           channel.description,
+        //           // TODO add a proper drawable resource to android, for now using
+        //           //      one that already exists in example app.
+        //           icon: 'launch_background',
+        //         ),
+        //       ));
+        // }
         notTurnBack = false;
         print('A new onMessageOpenedApp event was published!');
         // Navigator.pushNamed(
@@ -197,20 +223,39 @@ class _HomeScreenState extends State<HomeScreen> {
         //   '/home',
         // );
         print("Hello Adakama");
-        // Navigator.push(
-        //   context,
-        //   new MaterialPageRoute(
-        //     builder: (context) => new StudyWrapper(
-        //       study: reply.ReplyApp(
-        //         listNotification: listNotifications,
-        //       ),
-        //       hasBottomNavBar: false,
-        //       listNotification: listNotifications,
-        //     ),
-        //   ),
-        // );
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => new StudyWrapper(
+              study: reply.ReplyApp(
+                listNotification: listNotifications,
+                loadingData: true,
+              ),
+              hasBottomNavBar: false,
+            ),
+          ),
+        );
       });
     });
+  }
+
+  Future _onSelectNotification(String payload) async {
+    this.build(context);
+    Navigator.push(
+      context,
+      new MaterialPageRoute(
+        builder: (context) => new StudyWrapper(
+          study: reply.ReplyApp(
+            listNotification: listNotifications,
+            loadingData: true,
+          ),
+          hasBottomNavBar: false,
+        ),
+      ),
+    );
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
   }
 
   Future<bool> _onWillPop() {
@@ -288,6 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<NotificationResponseModel> notificationData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
+    print("Preference working username: " + username);
     APIService apiService = new APIService();
     notificationDataFuture =
         apiService.getAllNotificationOfStudent(1, 1000, username);
@@ -313,6 +359,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> refreshData() {
     setState(() {
+      _isLoading = true;
+    });
+    return loadDataOnRefresh().then((value) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+  }
+
+  Future loadDataOnRefresh() async {
+    setState(() {
       _listUserFuture = userData();
       _listClassFuture = classData();
       _listSubjectFuture = subjectData();
@@ -320,7 +377,12 @@ class _HomeScreenState extends State<HomeScreen> {
       _listNotificationFuture = notificationData();
       _listScheduleFuture = scheduleData();
     });
-    return Future.delayed(Duration(seconds: 1));
+    await userData();
+    await classData();
+    await subjectData();
+    await bookingData();
+    await notificationData();
+    await scheduleData();
   }
 
   @override
@@ -353,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Colors.white,
               body: _isLoading
                   ? Center(
-                      child: CircularProgressIndicator(),
+                      child: Intro10(Colors.white),
                     )
                   : Center(
                       child: _selectedIndex == 2
@@ -367,16 +429,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                       .elementAt(0)
                                       .branchName)
                               : new RefreshIndicator(
-                                  child: Home(
-                                    userData: userDataFuture,
-                                    username: username,
-                                    image: userModel.image,
-                                    email: userModel.email,
-                                    listClassesInput: listClasses,
-                                    listSubjectsInput: listSubjects,
-                                    listBookingsInput: listBookings,
-                                    listNotificationsInput: listNotifications,
-                                  ),
+                                  child: _isLoading == true
+                                      ? Intro10(Colors.white)
+                                      : Home(
+                                          userData: userDataFuture,
+                                          username: username,
+                                          image: userModel.image,
+                                          email: userModel.email,
+                                          listClassesInput: listClasses,
+                                          listSubjectsInput: listSubjects,
+                                          listBookingsInput: listBookings,
+                                          listNotificationsInput:
+                                              listNotifications,
+                                        ),
                                   onRefresh: refreshData,
                                 ),
                     ),
@@ -511,9 +576,9 @@ class Home extends StatelessWidget {
                     builder: (context) => new StudyWrapper(
                       study: reply.ReplyApp(
                         listNotification: listNotificationsInput,
+                        loadingData: false,
                       ),
                       hasBottomNavBar: false,
-                      listNotification: listNotificationsInput,
                     ),
                   ),
                 );
@@ -740,9 +805,9 @@ class Home extends StatelessWidget {
                 builder: (context) => new StudyWrapper(
                   study: reply.ReplyApp(
                     listNotification: listNotificationsInput,
+                    loadingData: false,
                   ),
                   hasBottomNavBar: false,
-                  listNotification: listNotificationsInput,
                 ),
               ),
             );
@@ -1290,7 +1355,7 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return isLoadingDataFromPickingDate
         ? Center(
-            child: Intro6(Colors.white),
+            child: Intro10(Colors.white),
           )
         : Stack(
             children: [
@@ -2104,13 +2169,11 @@ class StudyWrapper extends StatefulWidget {
     this.study,
     this.alignment = AlignmentDirectional.bottomStart,
     this.hasBottomNavBar = false,
-    this.listNotification,
   }) : super(key: key);
 
   final Widget study;
   final bool hasBottomNavBar;
   final AlignmentDirectional alignment;
-  final List<NotificationModel> listNotification;
 
   @override
   _StudyWrapperState createState() => _StudyWrapperState();

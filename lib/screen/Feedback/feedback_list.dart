@@ -9,6 +9,7 @@ import 'package:lcss_mobile_app/bloc/feedback_class_bloc.dart';
 import 'package:lcss_mobile_app/component/ImagePlaceHolder.dart';
 import 'package:lcss_mobile_app/model/feedback_class_model..dart';
 import 'package:lcss_mobile_app/model/feedback_data_model.dart';
+import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class FeedbackListPage extends StatefulWidget {
@@ -66,7 +67,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
               );
             } else
               return Center(
-                child: CircularProgressIndicator(),
+                child: Intro10(Colors.white),
               );
           }),
     );
@@ -194,7 +195,10 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                               ),
                               popup.show(
                                 title: 'Bạn đã gửi đánh giá thành công',
-                                content: '',
+                                content: Container(
+                                    constraints: BoxConstraints(
+                                        maxHeight: 250, maxWidth: 250),
+                                    child: Intro11(Colors.white)),
                                 actions: [
                                   popup.button(
                                     label: 'Close',

@@ -8,6 +8,7 @@ import 'package:lcss_mobile_app/screen/reply/model/email_model.dart';
 import 'package:lcss_mobile_app/screen/reply/model/email_store.dart';
 import 'package:lcss_mobile_app/screen/reply/profile_avatar.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class MailPreviewCard extends StatelessWidget {
   const MailPreviewCard({
@@ -146,8 +147,7 @@ class _DismissibleContainer extends StatelessWidget {
         color: Colors.transparent,
         child: ImageIcon(
           AssetImage(
-            'reply/icons/$icon.png',
-            package: 'flutter_gallery_assets',
+            'assets/icons/$icon.png',
           ),
           size: 36,
           color: iconColor,
@@ -182,6 +182,11 @@ class _MailPreview extends StatelessWidget {
       listen: false,
     );
 
+    String dtYearMonthDay = DateFormat("yyyy-MM-dd")
+        .format(DateTime.parse(notification.creatingDate));
+    String dtHour = DateFormat("HH:mm:ss")
+        .format(DateTime.parse(notification.creatingDate));
+
     return InkWell(
       onTap: () {
         Provider.of<EmailStore>(
@@ -210,7 +215,7 @@ class _MailPreview extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Text(
-                              '${notification.senderUsername} - ${notification.creatingDate}',
+                              '${notification.senderUsername} - $dtYearMonthDay : $dtHour',
                               style: textTheme.caption,
                             ),
                             const SizedBox(height: 4),
@@ -275,9 +280,8 @@ class _PicturePreview extends StatelessWidget {
           return Padding(
             padding: const EdgeInsetsDirectional.only(end: 4),
             child: Image.asset(
-              'reply/attachments/paris_${index + 1}.jpg',
+              'assets/attachments/paris_${index + 1}.jpg',
               gaplessPlayback: true,
-              package: 'flutter_gallery_assets',
             ),
           );
         },

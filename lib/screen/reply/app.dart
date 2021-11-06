@@ -2,7 +2,9 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 import 'package:lcss_mobile_app/Util/layout/letter_spacing.dart';
+import 'package:lcss_mobile_app/api/api_service.dart';
 import 'package:lcss_mobile_app/model/notification_model.dart';
+import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
 import 'package:lcss_mobile_app/screen/reply/adaptive_nav.dart';
 import 'package:lcss_mobile_app/screen/reply/colors.dart';
 import 'package:lcss_mobile_app/screen/reply/model/email_model.dart';
@@ -10,15 +12,18 @@ import 'package:lcss_mobile_app/screen/reply/model/email_store.dart';
 import 'package:lcss_mobile_app/screen/reply/routes.dart' as routes;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final rootNavKey = GlobalKey<NavigatorState>();
 
 class ReplyApp extends StatefulWidget {
-  const ReplyApp({Key key, this.listNotification}) : super(key: key);
+  const ReplyApp({Key key, this.listNotification, this.loadingData})
+      : super(key: key);
 
   static const String homeRoute = routes.homeRoute;
   static const String composeRoute = routes.composeRoute;
   final List<NotificationModel> listNotification;
+  final bool loadingData;
 
   @override
   _ReplyAppState createState() => _ReplyAppState();
@@ -26,6 +31,38 @@ class ReplyApp extends StatefulWidget {
 
 class _ReplyAppState extends State<ReplyApp> with RestorationMixin {
   final _RestorableEmailState _appState = _RestorableEmailState();
+  bool loadingData;
+  String username;
+
+  Future<NotificationResponseModel> notificationDataFuture;
+  List<NotificationModel> listNotification;
+
+  Future<NotificationResponseModel> notificationData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    username = prefs.getString("username");
+    print("Preference working username: " + username);
+    APIService apiService = new APIService();
+    notificationDataFuture =
+        apiService.getAllNotificationOfStudent(1, 1000, username);
+    return notificationDataFuture;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadingData = widget.loadingData;
+    listNotification = widget.listNotification;
+
+    if (widget.loadingData) {
+      notificationData().then((notificationData) {
+        listNotification = notificationData.listNotification;
+        setState(() {
+          loadingData = false;
+        });
+      });
+    }
+  }
 
   @override
   String get restorationId => 'replyState';
@@ -45,36 +82,39 @@ class _ReplyAppState extends State<ReplyApp> with RestorationMixin {
   Widget build(BuildContext context) {
     final replyTheme = _buildReplyLightTheme(context);
 
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<EmailStore>.value(
-          value: _appState.value,
-        ),
-      ],
-      child: MaterialApp(
-        navigatorKey: rootNavKey,
-        restorationScopeId: 'appNavigator',
-        title: 'Reply',
-        debugShowCheckedModeBanner: false,
-        theme: replyTheme,
-        localizationsDelegates: GalleryLocalizations.localizationsDelegates,
-        supportedLocales: GalleryLocalizations.supportedLocales,
-        initialRoute: ReplyApp.homeRoute,
-        onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case ReplyApp.homeRoute:
-              return MaterialPageRoute<void>(
-                builder: (context) => new AdaptiveNav(
-                  listNotification: widget.listNotification,
-                ),
-                settings: settings,
-              );
-              break;
-          }
-          return null;
-        },
-      ),
-    );
+    return loadingData
+        ? Intro7(Colors.white)
+        : MultiProvider(
+            providers: [
+              ChangeNotifierProvider<EmailStore>.value(
+                value: _appState.value,
+              ),
+            ],
+            child: MaterialApp(
+              navigatorKey: rootNavKey,
+              restorationScopeId: 'appNavigator',
+              title: 'Reply',
+              debugShowCheckedModeBanner: false,
+              theme: replyTheme,
+              localizationsDelegates:
+                  GalleryLocalizations.localizationsDelegates,
+              supportedLocales: GalleryLocalizations.supportedLocales,
+              initialRoute: ReplyApp.homeRoute,
+              onGenerateRoute: (settings) {
+                switch (settings.name) {
+                  case ReplyApp.homeRoute:
+                    return MaterialPageRoute<void>(
+                      builder: (context) => new AdaptiveNav(
+                        listNotification: listNotification,
+                      ),
+                      settings: settings,
+                    );
+                    break;
+                }
+                return null;
+              },
+            ),
+          );
   }
 }
 

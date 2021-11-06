@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:lcss_mobile_app/model/attendance_model.dart';
+import 'package:lcss_mobile_app/model/avatar_update_model.dart';
 import 'package:lcss_mobile_app/model/booking_model.dart';
 import 'package:lcss_mobile_app/model/class_model.dart';
 import 'package:lcss_mobile_app/model/feedback_class_model..dart';
@@ -402,6 +403,29 @@ class APIService {
 
     if (response.statusCode == 200) {
       return ScheduleResponseModel.fromJson(jsonDecode(decodeData));
+    } else {
+      return null;
+    }
+  }
+
+  Future<AvatarUpdateResponseModel> updateAvatar(
+      AvatarUpdateRequestModel avatarUpdateRequestModel,
+      String username) async {
+    var url = Uri.parse(urlBase + "image?id=" + username);
+
+    final msg = jsonEncode(avatarUpdateRequestModel);
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: msg,
+    );
+
+    if (response.statusCode == 200) {
+      return AvatarUpdateResponseModel.fromJson(
+          await json.decode(response.body));
     } else {
       return null;
     }

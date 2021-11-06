@@ -5,6 +5,7 @@ import 'package:lcss_mobile_app/screen/reply/mail_card_preview.dart';
 import 'package:lcss_mobile_app/screen/reply/model/email_model.dart';
 import 'package:lcss_mobile_app/screen/reply/model/email_store.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class MailboxBody extends StatelessWidget {
   const MailboxBody({Key key, @required this.listNotification})
