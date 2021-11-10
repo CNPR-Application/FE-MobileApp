@@ -109,6 +109,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                   color: AppColor.greenTheme,
                   borderColor: AppColor.greenTheme,
                   size: 30,
+                  allowHalfRating: false,
                   onRated: (subjectRating) {
                     feedbackSendingData.subjectRating = subjectRating.toInt();
                     isRatingSubject = true;
@@ -125,6 +126,7 @@ class _FeedbackListPageState extends State<FeedbackListPage> {
                   color: AppColor.greenTheme,
                   borderColor: AppColor.greenTheme,
                   size: 30,
+                  allowHalfRating: false,
                   onRated: (teacherRating) {
                     feedbackSendingData.teacherRating = teacherRating.toInt();
                     isRatingTeacher = true;

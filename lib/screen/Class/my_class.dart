@@ -7,6 +7,7 @@ import 'package:lcss_mobile_app/component/ImagePlaceHolder.dart';
 import 'package:lcss_mobile_app/model/myclass_model.dart';
 import 'package:lcss_mobile_app/model/subject_model.dart';
 import 'package:lcss_mobile_app/screen/Class/my_class_detail.dart';
+import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
 import 'package:multiple_stream_builder/multiple_stream_builder.dart';
 
 class MyClassPage extends StatefulWidget {
@@ -169,7 +170,7 @@ class _MyClassPageState extends State<MyClassPage> {
                           ? snapshot.item1.error
                           : snapshot.item2.error);
                     } else
-                      return Center(child: CircularProgressIndicator());
+                      return Center(child: Intro10(Colors.white10));
                   }),
               StreamBuilder2<MyClassResponseModel, SubjectResponseModel>(
                   streams: Tuple2(
@@ -234,7 +235,7 @@ class _MyClassPageState extends State<MyClassPage> {
                           ? snapshot.item1.error
                           : snapshot.item2.error);
                     } else
-                      return Center(child: CircularProgressIndicator());
+                      return Center(child: Intro10(Colors.white10));
                   }),
               StreamBuilder2<MyClassResponseModel, SubjectResponseModel>(
                   streams: Tuple2(
@@ -299,7 +300,7 @@ class _MyClassPageState extends State<MyClassPage> {
                           ? snapshot.item1.error
                           : snapshot.item2.error);
                     } else
-                      return Center(child: CircularProgressIndicator());
+                      return Center(child: Intro10(Colors.white10));
                   }),
             ],
           ),

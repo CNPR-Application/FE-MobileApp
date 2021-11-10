@@ -142,17 +142,24 @@ class BookingDetailPage extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0)),
                               onPressed: () {},
-                              color: bookingData.status.toLowerCase() == "paid"
+                              color: bookingData.status.toLowerCase() ==
+                                      "processed"
                                   ? AppColor.greenTheme
-                                  : Colors.orange,
+                                  : bookingData.status.toLowerCase() == "paid"
+                                      ? Colors.orange
+                                      : Colors.red,
                               textColor: Colors.white,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
                                   Text(
-                                    bookingData.status.toLowerCase() == "paid"
-                                        ? "Đã thanh toán"
-                                        : "Chờ thanh toán",
+                                    bookingData.status.toLowerCase() ==
+                                            "processed"
+                                        ? "Đã khai giảng"
+                                        : bookingData.status.toLowerCase() ==
+                                                "paid"
+                                            ? "Chờ khai giảng"
+                                            : "Đã hủy",
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16.0),
@@ -161,13 +168,20 @@ class BookingDetailPage extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Icon(
-                                      bookingData.status.toLowerCase() == "paid"
+                                      bookingData.status.toLowerCase() ==
+                                              "processed"
                                           ? Icons.done
-                                          : Icons.alarm,
+                                          : bookingData.status.toLowerCase() ==
+                                                  "paid"
+                                              ? Icons.alarm
+                                              : Icons.close,
                                       color: bookingData.status.toLowerCase() ==
-                                              "paid"
+                                              "processed"
                                           ? AppColor.greenTheme
-                                          : Colors.orange,
+                                          : bookingData.status.toLowerCase() ==
+                                                  "paid"
+                                              ? Colors.orange
+                                              : Colors.red,
                                       size: 16.0,
                                     ),
                                     decoration: BoxDecoration(
