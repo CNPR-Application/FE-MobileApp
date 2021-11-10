@@ -1109,40 +1109,40 @@ class _ScheduleState extends State<Schedule> {
     selectedMonth = DateFormat("MM").format(DateTime.now());
     switch (selectedMonth) {
       case "01":
-        month = "Jan";
+        month = "Tháng 1";
         break;
       case "02":
-        month = "Feb";
+        month = "Tháng 2";
         break;
       case "03":
-        month = "Mar";
+        month = "Tháng 3";
         break;
       case "04":
-        month = "Apr";
+        month = "Tháng 4";
         break;
       case "05":
-        month = "May";
+        month = "Tháng 5";
         break;
       case "06":
-        month = "Jun";
+        month = "Tháng 6";
         break;
       case "07":
-        month = "July";
+        month = "Tháng 7";
         break;
       case "08":
-        month = "Aug";
+        month = "Tháng 8";
         break;
       case "09":
-        month = "Sep";
+        month = "Tháng 9";
         break;
       case "10":
-        month = "Oct";
+        month = "Tháng 10";
         break;
       case "11":
-        month = "Nov";
+        month = "Tháng 11";
         break;
       case "12":
-        month = "Dec";
+        month = "Tháng 12";
         break;
     }
     dayOfToday = int.parse(DateFormat("dd").format(DateTime.now()));
@@ -1190,40 +1190,40 @@ class _ScheduleState extends State<Schedule> {
         selectedMonth = DateFormat("MM").format(selectedDate);
         switch (selectedMonth) {
           case "01":
-            month = "Jan";
+            month = "Tháng 1";
             break;
           case "02":
-            month = "Feb";
+            month = "Tháng 2";
             break;
           case "03":
-            month = "Mar";
+            month = "Tháng 3";
             break;
           case "04":
-            month = "Apr";
+            month = "Tháng 4";
             break;
           case "05":
-            month = "May";
+            month = "Tháng 5";
             break;
           case "06":
-            month = "Jun";
+            month = "Tháng 6";
             break;
           case "07":
-            month = "July";
+            month = "Tháng 7";
             break;
           case "08":
-            month = "Aug";
+            month = "Tháng 8";
             break;
           case "09":
-            month = "Sep";
+            month = "Tháng 9";
             break;
           case "10":
-            month = "Oct";
+            month = "Tháng 10";
             break;
           case "11":
-            month = "Nov";
+            month = "Tháng 11";
             break;
           case "12":
-            month = "Dec";
+            month = "Tháng 12";
             break;
         }
       });
@@ -1432,19 +1432,19 @@ class _ScheduleState extends State<Schedule> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             buildDateColumn(
-                                "M", dayOfMonday, isSelectedMonday, "Monday"),
-                            buildDateColumn("T", dayOfTuesday,
+                                "T2", dayOfMonday, isSelectedMonday, "Monday"),
+                            buildDateColumn("T3", dayOfTuesday,
                                 isSelectedTuesday, "Tuesday"),
-                            buildDateColumn("W", dayOfWednesday,
+                            buildDateColumn("T4", dayOfWednesday,
                                 isSelectedWednesday, "Wednesday"),
-                            buildDateColumn("T", dayOfThursday,
+                            buildDateColumn("T5", dayOfThursday,
                                 isSelectedThursday, "Thursday"),
                             buildDateColumn(
-                                "F", dayOfFriday, isSelectedFriday, "Friday"),
-                            buildDateColumn("Sa", dayOfSaturday,
+                                "T6", dayOfFriday, isSelectedFriday, "Friday"),
+                            buildDateColumn("T7", dayOfSaturday,
                                 isSelectedSaturday, "Saturday"),
                             buildDateColumn(
-                                "S", dayOfSunday, isSelectedSunday, "Sunday"),
+                                "CN", dayOfSunday, isSelectedSunday, "Sunday"),
                           ],
                         ),
                       ),
@@ -2210,7 +2210,7 @@ class _StudyWrapperState extends State<StudyWrapper> {
                 child: FloatingActionButton.extended(
                   backgroundColor: AppColor.blueForText,
                   heroTag: _BackButtonHeroTag(),
-                  key: const ValueKey('Back'),
+                  key: const ValueKey('Trở về'),
                   onPressed: () {
                     Navigator.of(context)
                         .popUntil((route) => route.settings.name == '/home');
@@ -2220,7 +2220,7 @@ class _StudyWrapperState extends State<StudyWrapper> {
                     child: const BackButtonIcon(),
                   ),
                   label: Text(
-                    MaterialLocalizations.of(context).backButtonTooltip,
+                    "Trở về",
                     style: textTheme.button.apply(color: colorScheme.onPrimary),
                   ),
                 ),

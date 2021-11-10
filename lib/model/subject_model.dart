@@ -12,7 +12,7 @@ class SubjectResponseModel {
   });
 
   factory SubjectResponseModel.fromJson(Map<String, dynamic> json) {
-    var list = json['subjectsResponseDtos'] as List;
+    var list = json['subjectsResponseDto'] as List;
     print(list.runtimeType);
     List<SubjectModel> subjectDtos =
         list.map((i) => SubjectModel.fromJson(i)).toList();

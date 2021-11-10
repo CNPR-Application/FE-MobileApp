@@ -296,7 +296,7 @@ class _EditPageState extends State<EditPage> {
               children: [
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 50),
+                    padding: EdgeInsets.symmetric(horizontal: 60),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
                   ),
@@ -644,7 +644,7 @@ class _EditPageState extends State<EditPage> {
                   style: ElevatedButton.styleFrom(
                     primary: AppColor.greenTheme,
                     onPrimary: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 50),
+                    padding: EdgeInsets.symmetric(horizontal: 60),
                     elevation: 2,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
@@ -655,11 +655,12 @@ class _EditPageState extends State<EditPage> {
                           strokeWidth: 3.5,
                         )
                       : Text(
-                          "CẬP NHẬT",
+                          "LƯU",
                           style: TextStyle(
                               fontSize: 14,
                               letterSpacing: 2.2,
-                              color: Colors.white),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
                         ),
                 )
               ],
