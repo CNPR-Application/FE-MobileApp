@@ -1,13 +1,13 @@
 class SubjectResponseModel {
   int pageNo;
   int pageSize;
-  int pageTotal;
+  int totalPage;
   List<SubjectModel> listSubject;
 
   SubjectResponseModel({
     this.pageNo,
     this.pageSize,
-    this.pageTotal,
+    this.totalPage,
     this.listSubject,
   });
 
@@ -20,7 +20,7 @@ class SubjectResponseModel {
     return SubjectResponseModel(
       pageNo: json['pageNo'] != null ? json['pageNo'] : 1,
       pageSize: json['pageSize'] != null ? json['pageSize'] : 2,
-      pageTotal: json['pageTotal'] != null ? json['pageTotal'] : 2,
+      totalPage: json['totalPage'] != null ? json['totalPage'] : 2,
       listSubject: subjectDtos,
     );
   }

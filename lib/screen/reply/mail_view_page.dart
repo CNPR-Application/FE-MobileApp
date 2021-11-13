@@ -4,6 +4,7 @@ import 'package:lcss_mobile_app/screen/reply/model/email_model.dart';
 import 'package:lcss_mobile_app/screen/reply/model/email_store.dart';
 import 'package:lcss_mobile_app/screen/reply/profile_avatar.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class MailViewPage extends StatelessWidget {
   const MailViewPage({Key key, @required this.id, @required this.notification})
@@ -62,6 +63,9 @@ class _MailViewHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    DateTime dt = DateTime.parse(notification.creatingDate);
+    String creatingDate = DateFormat("yyyy-MM-dd").format(dt);
+    String creatingTime = DateFormat("hh:mm a").format(dt);
 
     return Column(
       children: [
@@ -98,7 +102,7 @@ class _MailViewHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                    '${notification.senderUsername} - ${notification.creatingDate}'),
+                    '${notification.senderUsername} - $creatingDate - $creatingTime'),
                 const SizedBox(height: 4),
                 Text(
                   'To ${notification.receiverUsername},',

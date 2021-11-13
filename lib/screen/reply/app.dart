@@ -171,12 +171,13 @@ ThemeData _buildReplyLightTheme(BuildContext context) {
     navigationRailTheme: NavigationRailThemeData(
       backgroundColor: ReplyColors.blue700,
       selectedIconTheme: const IconThemeData(color: ReplyColors.orange500),
-      selectedLabelTextStyle: GoogleFonts.robotoTextTheme().headline5.copyWith(
-            color: ReplyColors.orange500,
-          ),
+      selectedLabelTextStyle:
+          GoogleFonts.quicksandTextTheme().headline5.copyWith(
+                color: ReplyColors.orange500,
+              ),
       unselectedIconTheme: const IconThemeData(color: ReplyColors.blue200),
       unselectedLabelTextStyle:
-          GoogleFonts.robotoTextTheme().headline5.copyWith(
+          GoogleFonts.quicksandTextTheme().headline5.copyWith(
                 color: ReplyColors.blue200,
               ),
     ),
@@ -217,12 +218,13 @@ ThemeData _buildReplyDarkTheme(BuildContext context) {
     navigationRailTheme: NavigationRailThemeData(
       backgroundColor: ReplyColors.darkBottomAppBarBackground,
       selectedIconTheme: const IconThemeData(color: ReplyColors.orange300),
-      selectedLabelTextStyle: GoogleFonts.robotoTextTheme().headline5.copyWith(
-            color: ReplyColors.orange300,
-          ),
+      selectedLabelTextStyle:
+          GoogleFonts.quicksandTextTheme().headline5.copyWith(
+                color: ReplyColors.orange300,
+              ),
       unselectedIconTheme: const IconThemeData(color: ReplyColors.greyLabel),
       unselectedLabelTextStyle:
-          GoogleFonts.robotoTextTheme().headline5.copyWith(
+          GoogleFonts.quicksandTextTheme().headline5.copyWith(
                 color: ReplyColors.greyLabel,
               ),
     ),
@@ -264,56 +266,56 @@ ChipThemeData _buildChipTheme(
     secondarySelectedColor: chipBackground,
     padding: const EdgeInsets.all(4),
     shape: const StadiumBorder(),
-    labelStyle: GoogleFonts.robotoTextTheme().bodyText2.copyWith(
+    labelStyle: GoogleFonts.quicksandTextTheme().bodyText2.copyWith(
           color: brightness == Brightness.dark
               ? ReplyColors.white50
               : ReplyColors.black900,
         ),
-    secondaryLabelStyle: GoogleFonts.robotoTextTheme().bodyText2,
+    secondaryLabelStyle: GoogleFonts.quicksandTextTheme().bodyText2,
     brightness: brightness,
   );
 }
 
 TextTheme _buildReplyLightTextTheme(TextTheme base) {
   return base.copyWith(
-    headline4: GoogleFonts.roboto(
+    headline4: GoogleFonts.quicksand(
       fontWeight: FontWeight.w600,
       fontSize: 34,
       letterSpacing: letterSpacingOrNone(0.4),
       height: 0.9,
       color: ReplyColors.black900,
     ),
-    headline5: GoogleFonts.roboto(
+    headline5: GoogleFonts.quicksand(
       fontWeight: FontWeight.bold,
       fontSize: 24,
       letterSpacing: letterSpacingOrNone(0.27),
       color: ReplyColors.black900,
     ),
-    headline6: GoogleFonts.roboto(
+    headline6: GoogleFonts.quicksand(
       fontWeight: FontWeight.w600,
       fontSize: 20,
       letterSpacing: letterSpacingOrNone(0.18),
       color: ReplyColors.black900,
     ),
-    subtitle2: GoogleFonts.roboto(
+    subtitle2: GoogleFonts.quicksand(
       fontWeight: FontWeight.w600,
       fontSize: 14,
       letterSpacing: letterSpacingOrNone(-0.04),
       color: ReplyColors.black900,
     ),
-    bodyText1: GoogleFonts.roboto(
+    bodyText1: GoogleFonts.quicksand(
       fontWeight: FontWeight.normal,
       fontSize: 18,
       letterSpacing: letterSpacingOrNone(0.2),
       color: ReplyColors.black900,
     ),
-    bodyText2: GoogleFonts.roboto(
+    bodyText2: GoogleFonts.quicksand(
       fontWeight: FontWeight.normal,
       fontSize: 14,
       letterSpacing: letterSpacingOrNone(-0.05),
       color: ReplyColors.black900,
     ),
-    caption: GoogleFonts.roboto(
+    caption: GoogleFonts.quicksand(
       fontWeight: FontWeight.normal,
       fontSize: 12,
       letterSpacing: letterSpacingOrNone(0.2),
@@ -324,44 +326,44 @@ TextTheme _buildReplyLightTextTheme(TextTheme base) {
 
 TextTheme _buildReplyDarkTextTheme(TextTheme base) {
   return base.copyWith(
-    headline4: GoogleFonts.workSans(
+    headline4: GoogleFonts.quicksand(
       fontWeight: FontWeight.w600,
       fontSize: 34,
       letterSpacing: letterSpacingOrNone(0.4),
       height: 0.9,
       color: ReplyColors.white50,
     ),
-    headline5: GoogleFonts.workSans(
+    headline5: GoogleFonts.quicksand(
       fontWeight: FontWeight.bold,
       fontSize: 24,
       letterSpacing: letterSpacingOrNone(0.27),
       color: ReplyColors.white50,
     ),
-    headline6: GoogleFonts.workSans(
+    headline6: GoogleFonts.quicksand(
       fontWeight: FontWeight.w600,
       fontSize: 20,
       letterSpacing: letterSpacingOrNone(0.18),
       color: ReplyColors.white50,
     ),
-    subtitle2: GoogleFonts.workSans(
+    subtitle2: GoogleFonts.quicksand(
       fontWeight: FontWeight.w600,
       fontSize: 14,
       letterSpacing: letterSpacingOrNone(-0.04),
       color: ReplyColors.white50,
     ),
-    bodyText1: GoogleFonts.workSans(
+    bodyText1: GoogleFonts.quicksand(
       fontWeight: FontWeight.normal,
       fontSize: 18,
       letterSpacing: letterSpacingOrNone(0.2),
       color: ReplyColors.white50,
     ),
-    bodyText2: GoogleFonts.workSans(
+    bodyText2: GoogleFonts.quicksand(
       fontWeight: FontWeight.normal,
       fontSize: 14,
       letterSpacing: letterSpacingOrNone(-0.05),
       color: ReplyColors.white50,
     ),
-    caption: GoogleFonts.workSans(
+    caption: GoogleFonts.quicksand(
       fontWeight: FontWeight.normal,
       fontSize: 12,
       letterSpacing: letterSpacingOrNone(0.2),

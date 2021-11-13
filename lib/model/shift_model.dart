@@ -1,13 +1,13 @@
 class ShiftResponseModel {
   int pageNo;
   int pageSize;
-  int pageTotal;
+  int totalPage;
   List<ShiftModel> listShift;
 
   ShiftResponseModel({
     this.pageNo,
     this.pageSize,
-    this.pageTotal,
+    this.totalPage,
     this.listShift,
   });
 
@@ -20,7 +20,7 @@ class ShiftResponseModel {
     return ShiftResponseModel(
       pageNo: json['pageNo'] != null ? json['pageNo'] : 1,
       pageSize: json['pageSize'] != null ? json['pageSize'] : 2,
-      pageTotal: json['pageTotal'] != null ? json['pageTotal'] : 2,
+      totalPage: json['totalPage'] != null ? json['totalPage'] : 2,
       listShift: shiftDtos,
     );
   }

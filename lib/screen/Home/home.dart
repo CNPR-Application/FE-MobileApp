@@ -906,6 +906,21 @@ class Home extends StatelessWidget {
   }
 
   Widget _categoryList(BuildContext context, int index) {
+    List<String> imageUrl = [
+      'http://tiengnhatcoban.edu.vn/images/2019/01/18/bang-chu-cai-kanji.jpg',
+      'https://tuhoconline.net/wp-content/uploads/cach-hoc-chu-kanji-hieu-qua-1.jpg',
+      'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
+      'https://www.uab.edu/reporter/images/images/japanese___stream.jpg',
+      'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
+      'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
+      'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
+      'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
+      'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+      'https://www.snowmonkeyresorts.com/wp-content/uploads/2021/05/388343_m.jpg',
+    ];
+    for (var i = 0; i < listSubjectsInput.length; i++) {
+      listSubjectsInput[i].image = imageUrl[i % 10];
+    }
     return InkWell(
       onTap: () {},
       child: Column(
@@ -1512,6 +1527,7 @@ class _ScheduleState extends State<Schedule> {
       List<SessionModel> listSession, String branchName) {
     DateTime dt = DateTime.parse(listSession[index].startTime);
     String dtStartFormat = DateFormat("kk:mm").format(dt);
+    int hour = int.parse(DateFormat("kk").format(dt));
     return Container(
       margin: EdgeInsets.only(bottom: 25),
       child: Column(
@@ -1545,7 +1561,7 @@ class _ScheduleState extends State<Schedule> {
                           ),
                           children: [
                             TextSpan(
-                              text: " AM",
+                              text: hour >= 0 && hour < 12 ? " AM" : " PM",
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 color: Colors.grey,

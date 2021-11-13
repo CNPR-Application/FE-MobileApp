@@ -1,13 +1,13 @@
 class MyClassResponseModel {
   int pageNo;
   int pageSize;
-  int pageTotal;
+  int totalPage;
   List<ClassModel> listClasses;
 
   MyClassResponseModel({
     this.pageNo,
     this.pageSize,
-    this.pageTotal,
+    this.totalPage,
     this.listClasses,
   });
 
@@ -20,7 +20,7 @@ class MyClassResponseModel {
     return MyClassResponseModel(
       pageNo: json['pageNo'] != null ? json['pageNo'] : 1,
       pageSize: json['pageSize'] != null ? json['pageSize'] : 2,
-      pageTotal: json['pageTotal'] != null ? json['pageTotal'] : 2,
+      totalPage: json['totalPage'] != null ? json['totalPage'] : 2,
       listClasses: classDtos,
     );
   }

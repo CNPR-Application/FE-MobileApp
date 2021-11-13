@@ -84,6 +84,37 @@ flutter:
     - assets/images/
     - assets/flare/
     - assets/icons/
+    - fonts/google_fonts/Merriweather-Regular.ttf
+    - fonts/google_fonts/Eczar-Regular.ttf
+    - fonts/google_fonts/Montserrat-Medium.ttf
+    - fonts/google_fonts/Rubik-Bold.ttf
+    - fonts/google_fonts/Merriweather-Light.ttf
+    - fonts/google_fonts/RobotoCondensed-Bold.ttf
+    - fonts/google_fonts/LibreFranklin-Regular.ttf
+    - fonts/google_fonts/RobotoMono-Regular.ttf
+    - fonts/google_fonts/LibreFranklin-ExtraBold.ttf
+    - fonts/google_fonts/LibreFranklin-Bold.ttf
+    - fonts/google_fonts/Oswald-SemiBold.ttf
+    - fonts/google_fonts/Oswald-Medium.ttf
+    - fonts/google_fonts/LibreFranklin-SemiBold.ttf
+    - fonts/google_fonts/Montserrat-Bold.ttf
+    - fonts/google_fonts/Merriweather-BoldItalic.ttf
+    - fonts/google_fonts/Rubik-Medium.ttf
+    - fonts/google_fonts/Montserrat-SemiBold.ttf
+    - fonts/google_fonts/RobotoCondensed-Regular.ttf
+    - fonts/google_fonts/LibreFranklin-Medium.ttf
+    - fonts/google_fonts/Montserrat-Regular.ttf
+    - fonts/google_fonts/Rubik-Regular.ttf
+    - fonts/google_fonts/Eczar-SemiBold.ttf
+    - fonts/google_fonts/WorkSans-Regular.ttf
+    - fonts/google_fonts/WorkSans-Medium.ttf
+    - fonts/google_fonts/WorkSans-Bold.ttf
+    - fonts/google_fonts/WorkSans-Thin.ttf
+    - fonts/google_fonts/WorkSans-SemiBold.ttf
+    - fonts/google_fonts/Raleway-Medium.ttf
+    - fonts/google_fonts/Raleway-SemiBold.ttf
+    - fonts/google_fonts/Raleway-Regular.ttf
+    - fonts/google_fonts/Raleway-Light.ttf
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
