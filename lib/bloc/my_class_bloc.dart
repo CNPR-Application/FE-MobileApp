@@ -26,6 +26,11 @@ class MyClassBloc {
 class Repository {
   final apiService = APIService();
 
-  Future<MyClassResponseModel> getMyClassData(String username, String status) =>
-      apiService.getClassByStatus(1, 100, username, status);
+  Future<MyClassResponseModel> getMyClassData(
+      String username, String status) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jwt = prefs.getString("jwt");
+    apiService.setTokenLogin(jwt);
+    return apiService.getClassByStatus(1, 100, username, status);
+  }
 }

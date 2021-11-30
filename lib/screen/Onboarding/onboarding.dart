@@ -8,6 +8,7 @@ import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
+import 'package:lcss_mobile_app/component/Logo.dart';
 
 class Intro5 extends StatefulWidget {
   Intro5(this.color);
@@ -22,6 +23,7 @@ const brightYellow = Color(0xFFFFD300);
 const darkYellow = Color(0xFFFFB900);
 
 class _Intro5State extends State<Intro5> {
+  SpeedMoController _controller = SpeedMoController("driving", speed: 3);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,6 +37,7 @@ class _Intro5State extends State<Intro5> {
               alignment: Alignment.center,
               fit: BoxFit.contain,
               animation: 'driving',
+              controller: _controller,
             ),
           ),
           // Flexible(
@@ -131,6 +134,7 @@ class Intro8 extends StatefulWidget {
 }
 
 class _Intro8State extends State<Intro8> {
+  SpeedMoController _controller = SpeedMoController("idle", speed: 1.75);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,6 +148,7 @@ class _Intro8State extends State<Intro8> {
               alignment: Alignment.center,
               fit: BoxFit.scaleDown,
               animation: 'idle',
+              controller: _controller,
             ),
           ),
         ],
@@ -162,7 +167,7 @@ class Intro9 extends StatefulWidget {
 }
 
 class _Intro9State extends State<Intro9> {
-  SlowMoController _controller = SlowMoController("Animations", speed: 0.3);
+  SpeedMoController _controller = SpeedMoController("Animations", speed: 0.3);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,7 +181,7 @@ class _Intro9State extends State<Intro9> {
               alignment: Alignment.center,
               fit: BoxFit.contain,
               animation: 'Animations',
-              controller: _controller,
+              // controller: _controller,
             ),
           ),
           Flexible(
@@ -213,13 +218,13 @@ class _Intro9State extends State<Intro9> {
   }
 }
 
-class SlowMoController extends FlareController {
+class SpeedMoController extends FlareController {
   final String animationName;
   ActorAnimation _animation;
   double speed;
   double _time = 0;
 
-  SlowMoController(this.animationName, {this.speed = 1});
+  SpeedMoController(this.animationName, {this.speed = 1});
 
   @override
   bool advance(FlutterActorArtboard artboard, double elapsed) {
@@ -263,13 +268,14 @@ class EndLoopController extends FlareController {
   @override
   bool advance(FlutterActorArtboard artboard, double elapsed) {
     _duration += elapsed;
-
     if (_duration > _actor.duration) {
       final double loopStart = _actor.duration - _loopAmount;
       final double loopProgress = _duration - _actor.duration;
       _duration = loopStart + loopProgress;
     }
+
     _actor.apply(_duration, artboard, _mix);
+
     return true;
   }
 
@@ -287,7 +293,7 @@ class Intro10 extends StatefulWidget {
 }
 
 class _Intro10State extends State<Intro10> {
-  EndLoopController _controller = EndLoopController("Animations", 5.5);
+  EndLoopController _controller = EndLoopController("Animations", 5, 0.5);
 
   @override
   Widget build(BuildContext context) {
@@ -296,7 +302,7 @@ class _Intro10State extends State<Intro10> {
       body: Column(
         children: [
           Flexible(
-            flex: 8,
+            flex: 1,
             child: FlareActor(
               'assets/flare/book.flr',
               alignment: Alignment.center,
@@ -380,4 +386,46 @@ class SingleLoopController extends FlareController {
 
   @override
   void setViewTransform(Mat2D viewTransform) {}
+}
+
+class LoginInit extends StatefulWidget {
+  const LoginInit({Key key}) : super(key: key);
+
+  @override
+  _LoginInitState createState() => _LoginInitState();
+}
+
+class _LoginInitState extends State<LoginInit> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColor.greenTheme,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Logo(
+              image: DecorationImage(
+                image: ExactAssetImage("assets/images/cnpr_logo2.png"),
+              ),
+            ),
+            Text(
+              "LCSS",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "Brighten Your Future",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

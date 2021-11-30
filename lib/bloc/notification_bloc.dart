@@ -27,6 +27,11 @@ class NotificationBloc {
 class Repository {
   final apiService = APIService();
 
-  Future<NotificationResponseModel> getAllNotificationData(String username) =>
-      apiService.getAllNotificationOfStudent(1, 100, username);
+  Future<NotificationResponseModel> getAllNotificationData(
+      String username) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jwt = prefs.getString("jwt");
+    apiService.setTokenLogin(jwt);
+    return apiService.getAllNotificationOfStudent(1, 100, username);
+  }
 }

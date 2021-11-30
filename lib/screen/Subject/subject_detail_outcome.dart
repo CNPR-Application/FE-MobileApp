@@ -10,6 +10,7 @@ import 'package:lcss_mobile_app/api/api_service.dart';
 import 'package:lcss_mobile_app/model/subject_detail_model.dart';
 import 'package:lcss_mobile_app/model/subject_model.dart';
 import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubjectDetailOutcomePage extends StatelessWidget {
   SubjectDetailOutcomePage(this.subjectId, this.subjectData);
@@ -22,7 +23,9 @@ class SubjectDetailOutcomePage extends StatelessWidget {
   List<SubjectDetailModel> listSubjectDetails;
 
   Future<SubjectDetailResponseModel> subjectDetailData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     APIService apiService = new APIService();
+    apiService.setTokenLogin(prefs.getString("jwt"));
     subjectDetailDataFuture = apiService.getSubjectDetail(1, 1000, subjectId);
     return subjectDetailDataFuture;
   }

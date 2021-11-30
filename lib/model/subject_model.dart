@@ -38,6 +38,9 @@ class SubjectModel {
   int slot;
   int slotPerWeek;
   String rating;
+  int curriculumId;
+  String curriculumCode;
+  String curriculumName;
 
   SubjectModel({
     this.subjectId,
@@ -51,6 +54,9 @@ class SubjectModel {
     this.slot,
     this.slotPerWeek,
     this.rating,
+    this.curriculumId,
+    this.curriculumCode,
+    this.curriculumName,
   });
 
   factory SubjectModel.fromJson(Map<String, dynamic> json) {
@@ -59,13 +65,18 @@ class SubjectModel {
       subjectCode: json['subjectCode'] != null ? json['subjectCode'] : "",
       subjectName: json['subjectName'] != null ? json['subjectName'] : "",
       price: json['price'] != null ? json['price'] : 0,
-      createingDate: json['createingDate'] != null ? json['createingDate'] : "",
+      createingDate: json['creatingDate'] != null ? json['createingDate'] : "",
       description: json['description'] != null ? json['description'] : "",
       isAvailable: json['isAvailable'] != null ? json['isAvailable'] : false,
-      image: json['image'] != null ? json['image'] : "",
       slot: json['slot'] != null ? json['slot'] : 0,
       slotPerWeek: json['slotPerWeek'] != null ? json['slotPerWeek'] : 0,
       rating: json['rating'] != null ? json['rating'] : "",
+      image: "",
+      curriculumId: json['curriculumId'] != null ? json['curriculumId'] : null,
+      curriculumCode:
+          json['curriculumCode'] != null ? json['curriculumCode'] : "",
+      curriculumName:
+          json['curriculumName'] != null ? json['curriculumName'] : "",
     );
   }
 }

@@ -14,6 +14,7 @@ import 'package:lcss_mobile_app/api/api_service.dart';
 import 'package:lcss_mobile_app/model/avatar_update_model.dart';
 import 'package:lcss_mobile_app/model/user_model.dart';
 import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef StringValue = String Function(String);
 
@@ -308,7 +309,7 @@ class _EditPageState extends State<EditPage> {
                           color: Colors.black)),
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (nameSaved != null &&
                         nameSaved.trim() != "" &&
                         addressSaved != null &&
@@ -331,6 +332,8 @@ class _EditPageState extends State<EditPage> {
                           editedParentName ||
                           editedParentPhone ||
                           _imageFile != null) {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
                         showDialog(
                           context: context,
                           builder: (BuildContext context) => new AlertDialog(
@@ -364,31 +367,37 @@ class _EditPageState extends State<EditPage> {
                                             onWillPop: () =>
                                                 Future.value(false),
                                             child: new AlertDialog(
-                                              content: new Column(
-                                                children: [
-                                                  Container(
-                                                    constraints: BoxConstraints(
-                                                      maxHeight: 100,
-                                                      maxWidth: 100,
+                                              content: Container(
+                                                constraints: BoxConstraints(
+                                                    maxHeight: 150,
+                                                    maxWidth: 270),
+                                                child: new Column(
+                                                  children: [
+                                                    Container(
+                                                      constraints:
+                                                          BoxConstraints(
+                                                        maxHeight: 100,
+                                                        maxWidth: 100,
+                                                      ),
+                                                      child: FlareActor(
+                                                        'assets/flare/book.flr',
+                                                        alignment:
+                                                            Alignment.center,
+                                                        fit: BoxFit.scaleDown,
+                                                        animation: 'Animations',
+                                                        controller:
+                                                            EndLoopController(
+                                                                "Animations",
+                                                                5.5),
+                                                      ),
                                                     ),
-                                                    child: FlareActor(
-                                                      'assets/flare/book.flr',
-                                                      alignment:
-                                                          Alignment.center,
-                                                      fit: BoxFit.scaleDown,
-                                                      animation: 'Animations',
-                                                      controller:
-                                                          EndLoopController(
-                                                              "Animations",
-                                                              5.5),
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 7),
-                                                      child: Text(
-                                                          "Đang cập nhật vui lòng chờ...")),
-                                                ],
+                                                    Container(
+                                                        margin: EdgeInsets.only(
+                                                            left: 7),
+                                                        child: Text(
+                                                            "Đang cập nhật vui lòng chờ...")),
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           );
@@ -411,6 +420,8 @@ class _EditPageState extends State<EditPage> {
                                       setState(() {
                                         APIService apiService =
                                             new APIService();
+                                        apiService.setTokenLogin(
+                                            prefs.getString("jwt"));
                                         var response =
                                             apiService.updateUserData(
                                                 username,
@@ -534,6 +545,8 @@ class _EditPageState extends State<EditPage> {
                                             setState(() {
                                               APIService apiService =
                                                   new APIService();
+                                              apiService.setTokenLogin(
+                                                  prefs.getString("jwt"));
                                               var response =
                                                   apiService.updateUserData(
                                                       username,
@@ -548,9 +561,12 @@ class _EditPageState extends State<EditPage> {
                                               print(response.toString());
                                               widget.userData = apiService
                                                   .getUserData(username);
-                                              _loading = false;
                                             });
                                           }
+
+                                          setState(() {
+                                            _loading = false;
+                                          });
                                           showDialog(
                                             context: context,
                                             barrierDismissible: false,
@@ -679,6 +695,8 @@ class _EditPageState extends State<EditPage> {
     AvatarUpdateRequestModel avatarRequestModel =
         new AvatarUpdateRequestModel();
     APIService apiService = new APIService();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    apiService.setTokenLogin(prefs.getString("jwt"));
 
     print("Data base64: " + base64.encode(bytesChange));
 

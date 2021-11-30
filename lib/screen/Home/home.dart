@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:intl/intl.dart';
+import 'package:lcss_mobile_app/screen/Subject/search_subject.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:lcss_mobile_app/Util/constant.dart';
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   String username;
   int branchId;
+  String jwt;
 
   Future<ClassResponseModel> classDataFuture;
   ClassResponseModel classModel;
@@ -58,12 +60,17 @@ class _HomeScreenState extends State<HomeScreen> {
   UserResponseModel userModel;
 
   bool notTurnBack;
+  bool _isReceivedNotification = false;
+
+  APIService apiService;
+  SharedPreferences prefs;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     setState(() {
       callLoad();
+      getTokenLogin();
       _isLoading = false;
       _listUserFuture = userData();
       _listClassFuture = classData();
@@ -84,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       callLoad();
       _isLoading = false;
+      getTokenLogin();
     });
     _listUserFuture = userData();
     _listClassFuture = classData();
@@ -96,6 +104,17 @@ class _HomeScreenState extends State<HomeScreen> {
   void pushFCMToken() async {
     String token = await messaging.getToken();
     print('The token is: ' + token);
+    prefs = await SharedPreferences.getInstance();
+    jwt = prefs.getString("jwt");
+    apiService = new APIService();
+    apiService.setTokenLogin(jwt);
+  }
+
+  void getTokenLogin() async {
+    prefs = await SharedPreferences.getInstance();
+    jwt = prefs.getString("jwt");
+    apiService = new APIService();
+    apiService.setTokenLogin(jwt);
   }
 
   void _firebaseConfig() {
@@ -148,6 +167,9 @@ class _HomeScreenState extends State<HomeScreen> {
         //   notTurnBack = true;
         // }
         print("Hello Notification");
+        setState(() {
+          _isReceivedNotification = false;
+        });
         Navigator.push(
           context,
           new MaterialPageRoute(
@@ -182,7 +204,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ));
         }
         print("Oh yeah we got it");
-
+        setState(() {
+          _isReceivedNotification = true;
+        });
         // Navigator.push(
         //   context,
         //   new MaterialPageRoute(
@@ -241,6 +265,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future _onSelectNotification(String payload) async {
     this.build(context);
+    setState(() {
+      _isReceivedNotification = false;
+    });
     Navigator.push(
       context,
       new MaterialPageRoute(
@@ -282,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   callLoad() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
     // APIService apiService = new APIService();
     // userData = apiService.getUserData(username);
@@ -291,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   saveBranchId(int branchIdInput) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     prefs.setInt("branchId", branchIdInput);
     // APIService apiService = new APIService();
     // userData = apiService.getUserData(username);
@@ -300,50 +327,48 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<UserResponseModel> userDataFuture;
 
   Future<UserResponseModel> userData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
-    APIService apiService = new APIService();
     userDataFuture = apiService.getUserData(username);
     return userDataFuture;
   }
 
   Future<ClassResponseModel> classData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     branchId = prefs.getInt("branchId");
-    APIService apiService = new APIService();
     print(branchId.toString() + "Hello");
     classDataFuture = apiService.getAllWaitingClass(1, 20, branchId);
     return classDataFuture;
   }
 
   Future<SubjectResponseModel> subjectData() async {
-    APIService apiService = new APIService();
+    prefs = await SharedPreferences.getInstance();
     subjectDataFuture = apiService.getAllSubjectData(1, 1000);
     return subjectDataFuture;
   }
 
   Future<BookingResponseModel> bookingData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
-    APIService apiService = new APIService();
+
     bookingDataFuture = apiService.getAllBookingOfStudent(1, 1000, username);
     return bookingDataFuture;
   }
 
   Future<NotificationResponseModel> notificationData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
     print("Preference working username: " + username);
-    APIService apiService = new APIService();
+
     notificationDataFuture =
         apiService.getAllNotificationOfStudent(1, 1000, username);
     return notificationDataFuture;
   }
 
   Future<ScheduleResponseModel> scheduleData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
-    APIService apiService = new APIService();
+
     String formattedDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
     print("The Time right now is: " + formattedDate);
     scheduleDataFuture = apiService.getScheduleData(username, formattedDate);
@@ -370,6 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future loadDataOnRefresh() async {
     setState(() {
+      getTokenLogin();
       _listUserFuture = userData();
       _listClassFuture = classData();
       _listSubjectFuture = subjectData();
@@ -441,6 +467,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           listBookingsInput: listBookings,
                                           listNotificationsInput:
                                               listNotifications,
+                                          isReceivedNotification:
+                                              _isReceivedNotification,
                                         ),
                                   onRefresh: refreshData,
                                 ),
@@ -518,7 +546,8 @@ class Home extends StatelessWidget {
       this.listClassesInput,
       this.listSubjectsInput,
       this.listBookingsInput,
-      this.listNotificationsInput})
+      this.listNotificationsInput,
+      this.isReceivedNotification})
       : super(key: key);
 
   Future<UserResponseModel> userData;
@@ -533,6 +562,8 @@ class Home extends StatelessWidget {
   final Color primary = Colors.white;
   final Color active = Colors.grey.shade800;
   final Color divider = Colors.grey.shade600;
+
+  bool isReceivedNotification;
 
   @override
   Widget build(BuildContext context) {
@@ -567,26 +598,45 @@ class Home extends StatelessWidget {
           );
         }),
         actions: [
-          IconButton(
-              onPressed: () {
-                // Navigator.pushNamed(context, reply_routes.homeRoute);
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                    builder: (context) => new StudyWrapper(
-                      study: reply.ReplyApp(
-                        listNotification: listNotificationsInput,
-                        loadingData: false,
+          Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(right: 10),
+            child: Stack(alignment: AlignmentDirectional.topEnd, children: [
+              IconButton(
+                  onPressed: () {
+                    // Navigator.pushNamed(context, reply_routes.homeRoute);
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                        builder: (context) => new StudyWrapper(
+                          study: reply.ReplyApp(
+                            listNotification: listNotificationsInput,
+                            loadingData: isReceivedNotification,
+                          ),
+                          hasBottomNavBar: false,
+                        ),
                       ),
-                      hasBottomNavBar: false,
+                    );
+                  },
+                  icon: Icon(
+                    Icons.notifications_none_outlined,
+                    color: AppColor.greenTheme,
+                  )),
+              isReceivedNotification
+                  ? Container(
+                      height: 8,
+                      width: 8,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.red,
+                      ),
+                    )
+                  : Container(
+                      height: 8,
+                      width: 8,
                     ),
-                  ),
-                );
-              },
-              icon: Icon(
-                Icons.notifications_none_outlined,
-                color: AppColor.greenTheme,
-              )),
+            ]),
+          ),
         ],
       ),
       drawer: _buildDrawer(image, context),
@@ -604,7 +654,18 @@ class Home extends StatelessWidget {
                 Spacer(),
                 InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, "/searchSubject");
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                        builder: (context) => new SearchSubject(
+                          email: email,
+                          image: image,
+                          isReceivedNotification: isReceivedNotification,
+                          listNotificationsInput: listNotificationsInput,
+                          username: username,
+                        ),
+                      ),
+                    );
                   },
                   child: Text("Xem tất cả"),
                 ),
@@ -724,7 +785,33 @@ class Home extends StatelessWidget {
                         Icons.power_settings_new,
                         color: active,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return new AlertDialog(
+                              title: new Text('Are you sure to log out?'),
+                              actions: <Widget>[
+                                new TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: new Text('No'),
+                                ),
+                                new TextButton(
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    prefs.remove("jwt");
+                                    Navigator.pushReplacementNamed(
+                                        context, "/login");
+                                  },
+                                  child: new Text('Yes'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
                   Container(
@@ -760,11 +847,13 @@ class Home extends StatelessWidget {
                       showBadge: false),
                   _buildDivider(),
                   _buildRow(context, Icons.notifications, "Thông báo",
-                      showBadge: true),
+                      showBadge: isReceivedNotification),
                   _buildDivider(),
                   _buildRow(context, Icons.email, "Đánh giá lớp học"),
                   _buildDivider(),
-                  _buildRow(context, Icons.info_outline, "Cần giúp đỡ"),
+                  _buildRow(context, Icons.history, "Lịch sử đăng ký"),
+                  _buildDivider(),
+                  _buildRow(context, Icons.book, "Môn học"),
                   _buildDivider(),
                 ],
               ),
@@ -798,6 +887,11 @@ class Home extends StatelessWidget {
           if (title == 'Đánh giá lớp học') {
             Navigator.pushNamed(context, "/checkFeedback");
           }
+
+          if (title == 'Lịch sử đăng ký') {
+            Navigator.pushNamed(context, "/bookingHistory");
+          }
+
           if (title == 'Thông báo') {
             Navigator.push(
               context,
@@ -805,9 +899,24 @@ class Home extends StatelessWidget {
                 builder: (context) => new StudyWrapper(
                   study: reply.ReplyApp(
                     listNotification: listNotificationsInput,
-                    loadingData: false,
+                    loadingData: isReceivedNotification,
                   ),
                   hasBottomNavBar: false,
+                ),
+              ),
+            );
+          }
+
+          if (title == 'Môn học') {
+            Navigator.push(
+              context,
+              new MaterialPageRoute(
+                builder: (context) => new SearchSubject(
+                  email: email,
+                  image: image,
+                  isReceivedNotification: isReceivedNotification,
+                  listNotificationsInput: listNotificationsInput,
+                  username: username,
                 ),
               ),
             );
@@ -1075,6 +1184,7 @@ class _ScheduleState extends State<Schedule> {
   bool isLoadingDataFromPickingDate;
 
   String username;
+  String jwt;
   Future<ScheduleResponseModel> scheduleDataFuture;
 
   ScheduleResponseModel scheduleDataPicked;
@@ -1361,7 +1471,9 @@ class _ScheduleState extends State<Schedule> {
   Future<ScheduleResponseModel> scheduleData(String pickedDate) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
+    jwt = prefs.getString("jwt");
     APIService apiService = new APIService();
+    apiService.setTokenLogin(jwt);
     scheduleDataFuture = apiService.getScheduleData(username, pickedDate);
     return scheduleDataFuture;
   }

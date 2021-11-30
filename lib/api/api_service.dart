@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:lcss_mobile_app/model/attendance_model.dart';
 import 'package:lcss_mobile_app/model/avatar_update_model.dart';
@@ -18,8 +19,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class APIService {
   var urlBase = "https://lcss-fa21.herokuapp.com/";
+  var tokenBase = "LCSS_FA21#CNPR";
+  var tokenLogin = "";
 
-  Future<LoginResponseModel> login(LoginRequestModel loginRequestModel) async {
+  void setTokenLogin(String token) {
+    tokenLogin = token;
+    print("Tokenlogin: " + token);
+  }
+
+  Future<LoginResponseModel> login(
+      LoginRequestModel loginRequestModel, bool rememberPass) async {
     var url = Uri.parse(urlBase + "login");
 
     final msg = jsonEncode(loginRequestModel);
@@ -35,10 +44,37 @@ class APIService {
     if (response.statusCode == 200) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString("username", jsonDecode(msg)['username']);
+      // user with rooted device can get password from prefs so we cannot do this to remember user, instead if
+      // we want to use <remember me> we need an server to deliver the password instead by sending it a ticket
+      // using SSL of course so people can't steal your ticket
+      // if (rememberPass) {
+      //   prefs.setString("password", jsonDecode(msg)['password']);
+      // }
       // prefs.setInt("branchId", jsonDecode(msg)['branchId']);
       return LoginResponseModel.fromJson(await json.decode(response.body));
     } else {
       return null;
+    }
+  }
+
+  Future<http.Response> forgotPassword(String username) async {
+    var url = Uri.parse(urlBase + "forgot-password?username=" + username);
+
+    var response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      return response;
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to send data.');
     }
   }
 
@@ -49,6 +85,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -81,7 +118,8 @@ class APIService {
     var response = await http.put(
       url,
       headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8'
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
       body: jsonEncode(<String, dynamic>{
         'name': name,
@@ -117,6 +155,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -143,6 +182,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -173,6 +213,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -201,6 +242,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -229,6 +271,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -259,6 +302,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -289,6 +333,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -311,6 +356,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -331,7 +377,8 @@ class APIService {
     var response = await http.put(
       url,
       headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8'
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
       body: jsonEncode(<String, dynamic>{
         'studentInClassId': feedbackData.studentInClassId,
@@ -368,6 +415,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -394,6 +442,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
     );
 
@@ -419,6 +468,7 @@ class APIService {
       url,
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: tokenBase + tokenLogin,
       },
       body: msg,
     );

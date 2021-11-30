@@ -2,6 +2,7 @@ import 'package:lcss_mobile_app/api/api_service.dart';
 import 'package:lcss_mobile_app/model/shift_model.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ShiftBloc {
   final _repository = Repository();
@@ -22,6 +23,10 @@ class ShiftBloc {
 class Repository {
   final apiService = APIService();
 
-  Future<ShiftResponseModel> getShiftData() =>
-      apiService.getAllShiftData(1, 100);
+  Future<ShiftResponseModel> getShiftData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jwt = prefs.getString("jwt");
+    apiService.setTokenLogin(jwt);
+    return apiService.getAllShiftData(1, 100);
+  }
 }

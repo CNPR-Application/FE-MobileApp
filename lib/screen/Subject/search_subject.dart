@@ -4,17 +4,33 @@
   */
 
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
+import 'package:lcss_mobile_app/Util/oval-right-clipper.dart';
 import 'package:lcss_mobile_app/api/api_service.dart';
-import 'package:lcss_mobile_app/model/subject_detail_model.dart';
+import 'package:lcss_mobile_app/model/notification_model.dart';
 import 'package:lcss_mobile_app/model/subject_model.dart';
+import 'package:lcss_mobile_app/screen/Home/home.dart';
 import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
 import 'package:lcss_mobile_app/screen/Subject/subject_detail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lcss_mobile_app/screen/reply/app.dart' as reply;
 
 class SearchSubject extends StatefulWidget {
-  SearchSubject({Key key}) : super(key: key);
+  SearchSubject(
+      {Key key,
+      this.username,
+      this.email,
+      this.image,
+      this.isReceivedNotification,
+      this.listNotificationsInput})
+      : super(key: key);
   static final String path = "lib/src/pages/lists/list2.dart";
+
+  final String username;
+  final String email;
+  final String image;
+  final bool isReceivedNotification;
+  final List<NotificationModel> listNotificationsInput;
 
   _SearchSubjectState createState() => _SearchSubjectState();
 }
@@ -35,16 +51,29 @@ class _SearchSubjectState extends State<SearchSubject> {
   SubjectResponseModel subjectModel;
   List<SubjectModel> listSubjects;
   List<SubjectModel> listSearchSubject;
+  String jwt;
+  SharedPreferences prefs;
+
+  final Color active = Colors.grey.shade800;
+  final Color divider = Colors.grey.shade600;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    getToken();
     _isSearch = false;
   }
 
+  void getToken() async {
+    prefs = await SharedPreferences.getInstance();
+    jwt = prefs.getString('jwt');
+  }
+
   Future<SubjectResponseModel> subjectData() async {
+    prefs = await SharedPreferences.getInstance();
     APIService apiService = new APIService();
+    apiService.setTokenLogin(jwt);
     subjectDataFuture = apiService.getAllSubjectData(1, 1000);
     return subjectDataFuture;
   }
@@ -73,124 +102,130 @@ class _SearchSubjectState extends State<SearchSubject> {
           }
           return Scaffold(
             backgroundColor: Color(0xfff0f0f0),
-            body: SingleChildScrollView(
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.only(top: 145),
-                      height: MediaQuery.of(context).size.height,
-                      width: double.infinity,
-                      child: ListView.builder(
-                          itemCount: _isSearch
-                              ? listSearchSubject.length
-                              : listSubjects.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return buildList(context, index);
-                          }),
-                    ),
-                    Container(
-                      height: 140,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: primary,
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(30),
-                              bottomRight: Radius.circular(30))),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.menu,
-                                color: Colors.white,
+            drawer: _buildDrawer(widget.image, context),
+            body: Builder(builder: (context) {
+              return SingleChildScrollView(
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.only(top: 145),
+                        height: MediaQuery.of(context).size.height,
+                        width: double.infinity,
+                        child: ListView.builder(
+                            itemCount: _isSearch
+                                ? listSearchSubject.length
+                                : listSubjects.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return buildList(context, index);
+                            }),
+                      ),
+                      Container(
+                        height: 140,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: primary,
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(30),
+                                bottomRight: Radius.circular(30))),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              IconButton(
+                                onPressed: () {
+                                  Scaffold.of(context).openDrawer();
+                                },
+                                icon: Icon(
+                                  Icons.menu,
+                                  color: Colors.white,
+                                ),
                               ),
+                              Text(
+                                "Môn học",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 24),
+                              ),
+                              IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.filter_list,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: 110,
                             ),
-                            Text(
-                              "Môn học",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 24),
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.filter_list,
-                                color: Colors.white,
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Material(
+                                elevation: 5.0,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                                child: TextField(
+                                  // controller: TextEditingController(text: locations[0]),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      listSearchSubject =
+                                          List<SubjectModel>.empty();
+                                      if (value.isNotEmpty) {
+                                        for (var i = 0;
+                                            i < listSubjects.length;
+                                            i++) {
+                                          if (listSubjects[i]
+                                              .subjectName
+                                              .toLowerCase()
+                                              .contains(value.toLowerCase())) {
+                                            print(listSubjects[i].subjectName);
+                                            print(i.toString());
+                                            listSearchSubject = [
+                                              ...listSearchSubject,
+                                              listSubjects[i]
+                                            ];
+                                          }
+                                        }
+                                        _isSearch = true;
+                                      } else {
+                                        _isSearch = false;
+                                      }
+                                    });
+                                  },
+                                  cursorColor: Theme.of(context).primaryColor,
+                                  style: dropdownMenuItem,
+                                  decoration: InputDecoration(
+                                      hintText: "Tìm kiếm môn học",
+                                      hintStyle: TextStyle(
+                                          color: Colors.black38, fontSize: 16),
+                                      prefixIcon: Material(
+                                        elevation: 0.0,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30)),
+                                        child: Icon(Icons.search),
+                                      ),
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 25, vertical: 13)),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    Container(
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 110,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Material(
-                              elevation: 5.0,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30)),
-                              child: TextField(
-                                // controller: TextEditingController(text: locations[0]),
-                                onChanged: (value) {
-                                  setState(() {
-                                    listSearchSubject =
-                                        List<SubjectModel>.empty();
-                                    if (value.isNotEmpty) {
-                                      for (var i = 0;
-                                          i < listSubjects.length;
-                                          i++) {
-                                        if (listSubjects[i]
-                                            .subjectName
-                                            .contains(value)) {
-                                          print(listSubjects[i].subjectName);
-                                          print(i.toString());
-                                          listSearchSubject = [
-                                            ...listSearchSubject,
-                                            listSubjects[i]
-                                          ];
-                                        }
-                                      }
-                                      _isSearch = true;
-                                    } else {
-                                      _isSearch = false;
-                                    }
-                                  });
-                                },
-                                cursorColor: Theme.of(context).primaryColor,
-                                style: dropdownMenuItem,
-                                decoration: InputDecoration(
-                                    hintText: "Tìm kiếm môn học",
-                                    hintStyle: TextStyle(
-                                        color: Colors.black38, fontSize: 16),
-                                    prefixIcon: Material(
-                                      elevation: 0.0,
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(30)),
-                                      child: Icon(Icons.search),
-                                    ),
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 25, vertical: 13)),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           );
         } else
           return Intro5(Colors.white);
@@ -304,6 +339,186 @@ class _SearchSubjectState extends State<SearchSubject> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  _buildDrawer(String image, BuildContext context) {
+    return ClipPath(
+      clipper: OvalRightBorderClipper(),
+      child: Drawer(
+        child: Container(
+          padding: const EdgeInsets.only(left: 16.0, right: 40),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.black45)]),
+          width: 300,
+          child: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.power_settings_new,
+                        color: active,
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return new AlertDialog(
+                              title: new Text('Are you sure to log out?'),
+                              actions: <Widget>[
+                                new TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: new Text('No'),
+                                ),
+                                new TextButton(
+                                  onPressed: () async {
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    prefs.remove("jwt");
+                                    Navigator.pushReplacementNamed(
+                                        context, "/login");
+                                  },
+                                  child: new Text('Yes'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    height: 90,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                            colors: [AppColor.greenTheme, Colors.green])),
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(image),
+                    ),
+                  ),
+                  SizedBox(height: 5.0),
+                  Text(
+                    widget.username,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    widget.email,
+                    style: TextStyle(color: active, fontSize: 16.0),
+                  ),
+                  SizedBox(height: 30.0),
+                  _buildRow(context, Icons.home, "Trang chủ"),
+                  _buildDivider(),
+                  _buildRow(context, Icons.person_pin, "Lớp học"),
+                  _buildDivider(),
+                  _buildRow(context, Icons.message, "Lớp học sắp khai giảng",
+                      showBadge: false),
+                  _buildDivider(),
+                  _buildRow(context, Icons.notifications, "Thông báo",
+                      showBadge: widget.isReceivedNotification),
+                  _buildDivider(),
+                  _buildRow(context, Icons.email, "Đánh giá lớp học"),
+                  _buildDivider(),
+                  _buildRow(context, Icons.history, "Lịch sử đăng ký"),
+                  _buildDivider(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Divider _buildDivider() {
+    return Divider(
+      color: divider,
+    );
+  }
+
+  Widget _buildRow(BuildContext context, IconData icon, String title,
+      {bool showBadge = false}) {
+    final TextStyle tStyle = TextStyle(color: active, fontSize: 16.0);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: InkWell(
+        onTap: () {
+          print('hello');
+          if (title == 'Lớp học sắp khai giảng') {
+            Navigator.pushNamed(context, "/searchClass");
+          }
+          if (title == 'Lớp học') {
+            Navigator.pushNamed(context, "/myClass");
+          }
+          if (title == 'Đánh giá lớp học') {
+            Navigator.pushNamed(context, "/checkFeedback");
+          }
+
+          if (title == 'Lịch sử đăng ký') {
+            Navigator.pushNamed(context, "/bookingHistory");
+          }
+
+          if (title == 'Thông báo') {
+            Navigator.push(
+              context,
+              new MaterialPageRoute(
+                builder: (context) => new StudyWrapper(
+                  study: reply.ReplyApp(
+                    listNotification: widget.listNotificationsInput,
+                    loadingData: widget.isReceivedNotification,
+                  ),
+                  hasBottomNavBar: false,
+                ),
+              ),
+            );
+          }
+        },
+        child: Row(children: [
+          Icon(
+            icon,
+            color: active,
+          ),
+          SizedBox(width: 10.0),
+          Text(
+            title,
+            style: tStyle,
+          ),
+          Spacer(),
+          if (showBadge)
+            Material(
+              color: Colors.green,
+              elevation: 5.0,
+              shadowColor: Colors.red,
+              borderRadius: BorderRadius.circular(5.0),
+              child: Container(
+                width: 25,
+                height: 25,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: Text(
+                  "!",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            )
+        ]),
       ),
     );
   }

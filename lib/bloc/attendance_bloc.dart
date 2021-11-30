@@ -13,6 +13,7 @@ class AttendanceBloc {
   getAttendanceData(int classId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String username = prefs.getString("username");
+
     AttendanceResponseModel attendanceModel =
         await _repository.getAttendanceData(username, classId);
     _attendanceFetcher.sink.add(attendanceModel);
@@ -27,6 +28,10 @@ class Repository {
   final apiService = APIService();
 
   Future<AttendanceResponseModel> getAttendanceData(
-          String username, int classId) =>
-      apiService.getAttendanceStudentByClass(1, 100, username, classId);
+      String username, int classId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jwt = prefs.getString("jwt");
+    apiService.setTokenLogin(jwt);
+    return apiService.getAttendanceStudentByClass(1, 100, username, classId);
+  }
 }

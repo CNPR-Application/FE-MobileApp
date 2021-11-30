@@ -8,7 +8,7 @@ class Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Container(
       width: 150.0,
-      height: 250.0,
+      height: 200.0,
       alignment: Alignment.center,
       decoration: new BoxDecoration(
         image: image,

@@ -27,6 +27,10 @@ class FeedbackClassBloc {
 class Repository {
   final apiService = APIService();
 
-  Future<FeedbackClassResponseModel> getMyClassData(String username) =>
-      apiService.getFeedBackClassByUsername(username);
+  Future<FeedbackClassResponseModel> getMyClassData(String username) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jwt = prefs.getString("jwt");
+    apiService.setTokenLogin(jwt);
+    return apiService.getFeedBackClassByUsername(username);
+  }
 }

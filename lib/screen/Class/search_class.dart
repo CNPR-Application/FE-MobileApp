@@ -21,13 +21,21 @@ class _SearchClassPageState extends State<SearchClassPage> {
   bool searchSubject;
   bool searchShift;
 
+  SharedPreferences prefs;
+
   @override
   void initState() {
     super.initState();
     searchSubject = false;
     searchShift = false;
+    getTokenLogin();
     // CALL 3 API and get in 3 models
     // callLoad();
+  }
+
+  void getTokenLogin() async {
+    prefs = await SharedPreferences.getInstance();
+    jwt = prefs.getString("jwt");
   }
 
   // callLoad() async {
@@ -44,24 +52,30 @@ class _SearchClassPageState extends State<SearchClassPage> {
 
   int subjectId;
   int shiftId;
+  String jwt;
 
   Future<ClassResponseModel> classData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     branchId = prefs.getInt("branchId");
     APIService apiService = new APIService();
+    apiService.setTokenLogin(jwt);
     print(branchId.toString() + "Hello");
     classDataFuture = apiService.getAllWaitingClass(1, 20, branchId);
     return classDataFuture;
   }
 
   Future<SubjectResponseModel> subjectData() async {
+    prefs = await SharedPreferences.getInstance();
     APIService apiService = new APIService();
+    apiService.setTokenLogin(jwt);
     subjectDataFuture = apiService.getAllSubjectData(1, 1000);
     return subjectDataFuture;
   }
 
   Future<ShiftResponseModel> shiftData() async {
+    prefs = await SharedPreferences.getInstance();
     APIService apiService = new APIService();
+    apiService.setTokenLogin(jwt);
     shiftDataFuture = apiService.getAllShiftData(1, 1000);
     return shiftDataFuture;
   }
@@ -323,8 +337,7 @@ class _SearchClassPageState extends State<SearchClassPage> {
               child: Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: NetworkImage(
-                        'https://blog.coursify.me/wp-content/uploads/2016/04/online-classes-coursifyme.jpg'),
+                    image: AssetImage("assets/images/bag.jpg"),
                     fit: BoxFit.cover),
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 boxShadow: [

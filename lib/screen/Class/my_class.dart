@@ -115,6 +115,18 @@ class _MyClassPageState extends State<MyClassPage> {
                       if (snapshot.item1.data.listClasses.isEmpty) {
                         return Center(child: Text('Không có lớp học nào'));
                       } else {
+                        List<String> imageUrl = [
+                          'http://tiengnhatcoban.edu.vn/images/2019/01/18/bang-chu-cai-kanji.jpg',
+                          'https://tuhoconline.net/wp-content/uploads/cach-hoc-chu-kanji-hieu-qua-1.jpg',
+                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
+                          'https://www.uab.edu/reporter/images/images/japanese___stream.jpg',
+                          'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
+                          'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
+                          'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
+                          'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
+                          'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://www.snowmonkeyresorts.com/wp-content/uploads/2021/05/388343_m.jpg',
+                        ];
                         return ListView.separated(
                           itemCount: snapshot.item1.data.listClasses.length,
                           itemBuilder: (context, index) {
@@ -122,12 +134,15 @@ class _MyClassPageState extends State<MyClassPage> {
                             listSubject = snapshot.item2.data.listSubject;
                             listClasses = snapshot.item1.data.listClasses;
                             for (var i = 0; i < listSubject.length; i++) {
+                              listSubject[i].image = imageUrl[i % 10];
+                            }
+                            for (var i = 0; i < listSubject.length; i++) {
                               if (listSubject[i].subjectId ==
                                   listClasses[index].subjectId) {
                                 itemSubject = listSubject[i];
                               }
                             }
-                            // Get Subject correspond with Subject in each View END
+                            // Get Subject correspond with Class in each View END
                             return ListTile(
                               onTap: () {
                                 Navigator.push(
@@ -180,12 +195,28 @@ class _MyClassPageState extends State<MyClassPage> {
                       if (snapshot.item1.data.listClasses.isEmpty) {
                         return Center(child: Text('Không có lớp học nào'));
                       } else {
+                        List<String> imageUrl = [
+                          'http://tiengnhatcoban.edu.vn/images/2019/01/18/bang-chu-cai-kanji.jpg',
+                          'https://tuhoconline.net/wp-content/uploads/cach-hoc-chu-kanji-hieu-qua-1.jpg',
+                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
+                          'https://www.uab.edu/reporter/images/images/japanese___stream.jpg',
+                          'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
+                          'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
+                          'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
+                          'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
+                          'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://www.snowmonkeyresorts.com/wp-content/uploads/2021/05/388343_m.jpg',
+                        ];
                         return ListView.separated(
                           itemCount: snapshot.item1.data.listClasses.length,
                           itemBuilder: (context, index) {
                             // Get Subject correspond with Subject in each View START
                             listSubject = snapshot.item2.data.listSubject;
                             listClasses = snapshot.item1.data.listClasses;
+                            // Fix Image
+                            for (var i = 0; i < listSubject.length; i++) {
+                              listSubject[i].image = imageUrl[i % 10];
+                            }
                             for (var i = 0; i < listSubject.length; i++) {
                               if (listSubject[i].subjectId ==
                                   listClasses[index].subjectId) {
@@ -245,12 +276,27 @@ class _MyClassPageState extends State<MyClassPage> {
                       if (snapshot.item1.data.listClasses.isEmpty) {
                         return Center(child: Text('Không có lớp học nào'));
                       } else {
+                        List<String> imageUrl = [
+                          'http://tiengnhatcoban.edu.vn/images/2019/01/18/bang-chu-cai-kanji.jpg',
+                          'https://tuhoconline.net/wp-content/uploads/cach-hoc-chu-kanji-hieu-qua-1.jpg',
+                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
+                          'https://www.uab.edu/reporter/images/images/japanese___stream.jpg',
+                          'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
+                          'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
+                          'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
+                          'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
+                          'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://www.snowmonkeyresorts.com/wp-content/uploads/2021/05/388343_m.jpg',
+                        ];
                         return ListView.separated(
                           itemCount: snapshot.item1.data.listClasses.length,
                           itemBuilder: (context, index) {
                             // Get Subject correspond with Subject in each View START
                             listSubject = snapshot.item2.data.listSubject;
                             listClasses = snapshot.item1.data.listClasses;
+                            for (var i = 0; i < listSubject.length; i++) {
+                              listSubject[i].image = imageUrl[i % 10];
+                            }
                             for (var i = 0; i < listSubject.length; i++) {
                               if (listSubject[i].subjectId ==
                                   listClasses[index].subjectId) {

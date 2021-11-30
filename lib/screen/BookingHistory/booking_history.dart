@@ -20,11 +20,13 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
   List<BookingModel> listBookings;
 
   String username;
+  SharedPreferences prefs;
 
   Future<BookingResponseModel> bookingData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     username = prefs.getString("username");
     APIService apiService = new APIService();
+    apiService.setTokenLogin(prefs.getString("jwt"));
     bookingDataFuture = apiService.getAllBookingOfStudent(1, 1000, username);
     return bookingDataFuture;
   }

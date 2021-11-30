@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:lcss_mobile_app/Util/constant.dart';
+import 'package:lcss_mobile_app/screen/ForgotPassword/forgot_password_screen.dart';
 import 'package:lcss_mobile_app/screen/Login/login.dart';
 import 'package:lcss_mobile_app/screen/Attendance/attendance_student.dart';
 import 'package:lcss_mobile_app/screen/BookingHistory/booking_history.dart';
@@ -10,6 +11,7 @@ import 'package:lcss_mobile_app/screen/Class/search_class.dart';
 import 'package:lcss_mobile_app/screen/Edit/edit_profile.dart';
 import 'package:lcss_mobile_app/screen/Feedback/feedback_list.dart';
 import 'package:lcss_mobile_app/screen/Home/home.dart';
+import 'package:lcss_mobile_app/screen/Login/sign_in_screen.dart';
 import 'package:lcss_mobile_app/screen/Onboarding/onboarding.dart';
 import 'package:lcss_mobile_app/screen/Subject/search_subject.dart';
 import 'package:lcss_mobile_app/screen/reply/app.dart' as reply;
@@ -30,13 +32,21 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: "LCSS Mobile App",
       debugShowCheckedModeBanner: false,
-      home: new LoginScreen(),
+      // home: new LoginScreen(),
+      home: new SignInScreen(),
       // ignore: missing_return
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case '/login':
             return new MyCustomRoute(
-              builder: (_) => new LoginScreen(),
+              // builder: (_) => new LoginScreen(),
+              builder: (_) => new SignInScreen(),
+              settings: settings,
+            );
+          case '/forgotPassword':
+            return new MyCustomRoute(
+              // builder: (_) => new LoginScreen(),
+              builder: (_) => new ForgotPasswordScreen(),
               settings: settings,
             );
           case '/home':

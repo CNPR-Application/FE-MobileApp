@@ -9,6 +9,7 @@ import 'package:lcss_mobile_app/component/Logo.dart';
 import 'package:lcss_mobile_app/model/login_model.dart';
 import 'package:lcss_mobile_app/screen/Login/loginAnimation.dart';
 import 'package:lcss_mobile_app/screen/Login/styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);
@@ -136,13 +137,17 @@ class _LoginScreenState extends State<LoginScreen>
                         ? new Padding(
                             padding: const EdgeInsets.only(bottom: 50.0),
                             child: InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 // if validating success
                                 APIService apiService = new APIService();
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
                                 apiService
-                                    .login(loginRequestModel)
+                                    .login(loginRequestModel, false)
                                     .then((value) {
                                   if (value != null) {
+                                    prefs.setString("jwt", value.jwt);
+                                    apiService.setTokenLogin(value.jwt);
                                     if (value.role == 'student') {
                                       // ok
                                       setState(() {

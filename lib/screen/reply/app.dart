@@ -1,4 +1,3 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 import 'package:lcss_mobile_app/Util/layout/letter_spacing.dart';
@@ -42,6 +41,7 @@ class _ReplyAppState extends State<ReplyApp> with RestorationMixin {
     username = prefs.getString("username");
     print("Preference working username: " + username);
     APIService apiService = new APIService();
+    apiService.setTokenLogin(prefs.getString("jwt"));
     notificationDataFuture =
         apiService.getAllNotificationOfStudent(1, 1000, username);
     return notificationDataFuture;
