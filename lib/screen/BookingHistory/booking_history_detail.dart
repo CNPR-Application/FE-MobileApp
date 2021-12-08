@@ -63,16 +63,16 @@ class BookingDetailPage extends StatelessWidget {
                             children: <Widget>[
                               ListTile(
                                 title: Text(
-                                  bookingData.subjectName,
+                                  bookingData.className,
                                   style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 28.0),
                                 ),
-                                trailing: IconButton(
-                                  icon: Icon(Icons.favorite_border),
-                                  onPressed: () {},
-                                ),
+                                // trailing: IconButton(
+                                //   icon: Icon(Icons.favorite_border),
+                                //   onPressed: () {},
+                                // ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -92,6 +92,12 @@ class BookingDetailPage extends StatelessWidget {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 children: <Widget>[
+                                  Container(
+                                    alignment: Alignment.topLeft,
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(
+                                        "Môn học: " + bookingData.subjectName),
+                                  ),
                                   Container(
                                     alignment: Alignment.topLeft,
                                     padding: const EdgeInsets.all(16.0),

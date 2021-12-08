@@ -43,6 +43,8 @@ class ClassModel {
   String teacherName;
   String roomName;
   int roomId;
+  int studentInClassId;
+  bool suspend;
 
   ClassModel({
     this.classId,
@@ -61,6 +63,8 @@ class ClassModel {
     this.teacherName,
     this.roomName,
     this.roomId,
+    this.studentInClassId,
+    this.suspend,
   });
 
   factory ClassModel.fromJson(Map<String, dynamic> json) {
@@ -82,6 +86,9 @@ class ClassModel {
       teacherName: json['teacherName'] != null ? json['teacherName'] : "",
       roomName: json['roomName'] != null ? json['roomName'] : "",
       roomId: json['roomId'] != null ? json['roomId'] : null,
+      studentInClassId:
+          json['studentInClassId'] != null ? json['studentInClassId'] : 0,
+      suspend: json['suspend'] != null ? json['suspend'] : false,
     );
   }
 }

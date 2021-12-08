@@ -123,7 +123,7 @@ class _GeneralCardState extends State<GeneralCard> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "${widget.bookingData.subjectName}",
+                          "${widget.bookingData.className}",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,

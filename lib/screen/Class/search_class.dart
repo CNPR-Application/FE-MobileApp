@@ -354,14 +354,14 @@ class _SearchClassPageState extends State<SearchClassPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    item.subjectName,
+                    item.className,
                     style:
                         TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(
                     height: 10.0,
                   ),
-                  Text(item.className,
+                  Text(item.subjectName,
                       style: TextStyle(color: Colors.grey, fontSize: 18.0)),
                   SizedBox(
                     height: 20.0,

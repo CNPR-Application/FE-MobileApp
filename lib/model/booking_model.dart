@@ -29,6 +29,8 @@ class BookingResponseModel {
 class BookingModel {
   int bookingId;
   String payingDate;
+  int classId;
+  String className;
   int subjectId;
   String subjectName;
   int shiftId;
@@ -45,6 +47,8 @@ class BookingModel {
   BookingModel({
     this.bookingId,
     this.payingDate,
+    this.classId,
+    this.className,
     this.subjectId,
     this.subjectName,
     this.shiftId,
@@ -63,6 +67,8 @@ class BookingModel {
     return BookingModel(
       bookingId: json['bookingId'] != null ? json['bookingId'] : 0,
       payingDate: json['payingDate'] != null ? json['payingDate'] : "",
+      classId: json['classId'] != null ? json['classId'] : 0,
+      className: json['className'] != null ? json['className'] : "",
       subjectId: json['subjectId'] != null ? json['subjectId'] : 0,
       subjectName: json['subjectName'] != null ? json['subjectName'] : "",
       shiftId: json['shiftId'] != null ? json['shiftId'] : 0,

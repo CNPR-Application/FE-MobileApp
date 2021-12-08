@@ -118,13 +118,19 @@ class _MyClassPageState extends State<MyClassPage> {
                         List<String> imageUrl = [
                           'http://tiengnhatcoban.edu.vn/images/2019/01/18/bang-chu-cai-kanji.jpg',
                           'https://tuhoconline.net/wp-content/uploads/cach-hoc-chu-kanji-hieu-qua-1.jpg',
-                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
                           'https://www.uab.edu/reporter/images/images/japanese___stream.jpg',
-                          'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
-                          'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
-                          'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
-                          'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
-                          'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
+                          // 'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
+                          'https://examseekers.files.wordpress.com/2021/04/ee023b0.png?w=1024',
+                          'https://englishclassviaskype.com/wp-content/uploads/2017/09/how-to-prepare-Cambridge-Flyers.jpg',
+                          // 'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
+                          'https://tiengtrung.com/wp-content/uploads/2020/09/t%E1%BB%AB-v%E1%BB%B1ng-ti%E1%BA%BFng-Trung-HSK1.jpg',
+                          // 'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
+                          'https://academy.duhocstudytrust.vn/wp-content/uploads/sites/2/2020/12/maxresdefault-1024x576.jpg',
+                          // 'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
+                          'https://chinese.com.vn/wp-content/uploads/2018/10/hsk-3.jpg',
+                          // 'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://tiengtrung.com/wp-content/uploads/2020/08/hsk4-l%C3%A0-g%C3%AC.jpg',
                           'https://www.snowmonkeyresorts.com/wp-content/uploads/2021/05/388343_m.jpg',
                         ];
                         return ListView.separated(
@@ -165,13 +171,21 @@ class _MyClassPageState extends State<MyClassPage> {
                                   width: 60.0,
                                   height: 60.0,
                                   child: _DestinationImage(
-                                    urlImage: itemSubject.image,
+                                    urlImage:
+                                        "https://media.slidesgo.com/storage/13785564/conversions/37-school-backgrounds-for-virtual-classroom-thumb.jpg",
                                     imageAspectRatio: 1,
                                   ),
                                 ),
                               ),
                               title: Text(listClasses[index].className,
                                   style: Theme.of(context).textTheme.subtitle1),
+                              // trailing: listClasses[index].suspend
+                              //     ? Text(
+                              //         "Đã chuyển lớp",
+                              //         style:
+                              //             TextStyle(color: AppColor.greenTheme),
+                              //       )
+                              //     : Container(),
                             );
                           },
                           separatorBuilder: (context, index) {
@@ -198,13 +212,19 @@ class _MyClassPageState extends State<MyClassPage> {
                         List<String> imageUrl = [
                           'http://tiengnhatcoban.edu.vn/images/2019/01/18/bang-chu-cai-kanji.jpg',
                           'https://tuhoconline.net/wp-content/uploads/cach-hoc-chu-kanji-hieu-qua-1.jpg',
-                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
                           'https://www.uab.edu/reporter/images/images/japanese___stream.jpg',
-                          'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
-                          'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
-                          'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
-                          'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
-                          'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
+                          // 'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
+                          'https://examseekers.files.wordpress.com/2021/04/ee023b0.png?w=1024',
+                          'https://englishclassviaskype.com/wp-content/uploads/2017/09/how-to-prepare-Cambridge-Flyers.jpg',
+                          // 'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
+                          'https://tiengtrung.com/wp-content/uploads/2020/09/t%E1%BB%AB-v%E1%BB%B1ng-ti%E1%BA%BFng-Trung-HSK1.jpg',
+                          // 'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
+                          'https://academy.duhocstudytrust.vn/wp-content/uploads/sites/2/2020/12/maxresdefault-1024x576.jpg',
+                          // 'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
+                          'https://chinese.com.vn/wp-content/uploads/2018/10/hsk-3.jpg',
+                          // 'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://tiengtrung.com/wp-content/uploads/2020/08/hsk4-l%C3%A0-g%C3%AC.jpg',
                           'https://www.snowmonkeyresorts.com/wp-content/uploads/2021/05/388343_m.jpg',
                         ];
                         return ListView.separated(
@@ -246,13 +266,21 @@ class _MyClassPageState extends State<MyClassPage> {
                                   width: 60.0,
                                   height: 60.0,
                                   child: _DestinationImage(
-                                    urlImage: itemSubject.image,
+                                    urlImage:
+                                        "https://media.slidesgo.com/storage/13785564/conversions/37-school-backgrounds-for-virtual-classroom-thumb.jpg",
                                     imageAspectRatio: 1,
                                   ),
                                 ),
                               ),
                               title: Text(listClasses[index].className,
                                   style: Theme.of(context).textTheme.subtitle1),
+                              // trailing: listClasses[index].suspend
+                              //     ? Text(
+                              //         "Đã chuyển lớp",
+                              //         style:
+                              //             TextStyle(color: AppColor.greenTheme),
+                              //       )
+                              //     : Container(),
                             );
                           },
                           separatorBuilder: (context, index) {
@@ -279,13 +307,19 @@ class _MyClassPageState extends State<MyClassPage> {
                         List<String> imageUrl = [
                           'http://tiengnhatcoban.edu.vn/images/2019/01/18/bang-chu-cai-kanji.jpg',
                           'https://tuhoconline.net/wp-content/uploads/cach-hoc-chu-kanji-hieu-qua-1.jpg',
-                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
                           'https://www.uab.edu/reporter/images/images/japanese___stream.jpg',
-                          'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
-                          'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
-                          'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
-                          'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
-                          'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://career.gpo.vn/uploads/images/485568610/images/phuong-phap-hoc-tap-cua-tien-si-marty-lobdell-study-less-study-smart-phan-2-huong-nghiep-gpo(3).jpg',
+                          // 'https://i0.wp.com/lh3.googleusercontent.com/-e6n1iMn81xY/X9G6QbKcekI/AAAAAAAAM6E/rXWdJ5q8UwMAJusbvW7ZVoNH4qmiSPe1gCLcBGAsYHQ/w640-h429/image.png?ssl=1',
+                          'https://examseekers.files.wordpress.com/2021/04/ee023b0.png?w=1024',
+                          'https://englishclassviaskype.com/wp-content/uploads/2017/09/how-to-prepare-Cambridge-Flyers.jpg',
+                          // 'https://www.infobooks.org/wp-content/uploads/2021/01/Japanese-Books-PDF.jpg',
+                          'https://tiengtrung.com/wp-content/uploads/2020/09/t%E1%BB%AB-v%E1%BB%B1ng-ti%E1%BA%BFng-Trung-HSK1.jpg',
+                          // 'https://ih1.redbubble.net/image.1047234144.4273/farp,small,wall_texture,product,750x1000.jpg',
+                          'https://academy.duhocstudytrust.vn/wp-content/uploads/sites/2/2020/12/maxresdefault-1024x576.jpg',
+                          // 'https://www.global.hokudai.ac.jp/wp-content/uploads/2012/11/nihongo.jpg',
+                          'https://chinese.com.vn/wp-content/uploads/2018/10/hsk-3.jpg',
+                          // 'https://www.japanvisitor.com/images/content_images/japanese-language-2019.jpg',
+                          'https://tiengtrung.com/wp-content/uploads/2020/08/hsk4-l%C3%A0-g%C3%AC.jpg',
                           'https://www.snowmonkeyresorts.com/wp-content/uploads/2021/05/388343_m.jpg',
                         ];
                         return ListView.separated(
@@ -326,13 +360,21 @@ class _MyClassPageState extends State<MyClassPage> {
                                   width: 60.0,
                                   height: 60.0,
                                   child: _DestinationImage(
-                                    urlImage: itemSubject.image,
+                                    urlImage:
+                                        "https://media.slidesgo.com/storage/13785564/conversions/37-school-backgrounds-for-virtual-classroom-thumb.jpg",
                                     imageAspectRatio: 1,
                                   ),
                                 ),
                               ),
                               title: Text(listClasses[index].className,
                                   style: Theme.of(context).textTheme.subtitle1),
+                              // trailing: listClasses[index].suspend
+                              //     ? Text(
+                              //         "Đã chuyển lớp",
+                              //         style:
+                              //             TextStyle(color: AppColor.greenTheme),
+                              //       )
+                              //     : Container(),
                             );
                           },
                           separatorBuilder: (context, index) {
@@ -403,6 +445,12 @@ class _MyClassPageState extends State<MyClassPage> {
                     title: Text(
                         snapshot.item1.data.listClasses[index].className,
                         style: Theme.of(context).textTheme.subtitle1),
+                    // trailing: listClasses[index].suspend
+                    //     ? Text(
+                    //         "Đã chuyển lớp",
+                    //         style: TextStyle(color: AppColor.greenTheme),
+                    //       )
+                    //     : Container(),
                   );
                 },
                 separatorBuilder: (context, index) {
